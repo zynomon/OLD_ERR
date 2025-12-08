@@ -1,4 +1,4 @@
-<img width="32" height="32" alt="base" src="https://github.com/user-attachments/assets/b0b94de7-f77f-4bb6-b36c-e683d987c8a5" /> error.base
+# <img width="64" height="64" alt="base" src="https://github.com/user-attachments/assets/b0b94de7-f77f-4bb6-b36c-e683d987c8a5" /> error.base
 
 error.base is a debian meta package that contains..
 errpapers ( error.os core wallpapers )
@@ -17,6 +17,7 @@ well no it's 49 mb or i'd say 50
 
 <img width="1280" height="775" alt="image" src="https://github.com/user-attachments/assets/a3d99c4b-ed67-4c7d-9d86-70bd6caafcfb" />
 the ascii after installation
+
 
 
 
