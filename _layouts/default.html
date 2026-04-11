@@ -12,6 +12,28 @@
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/components/style.css' | relative_url }}">
   <link href="https://fonts.cdnfonts.com/css/ocr-a-extended" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.cells.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
+  <style>
+    #vanta-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .anim-toggle svg {
+      stroke: var(--txt);
+      width: 18px;
+      height: 18px;
+    }
+    .anim-toggle.off svg {
+      opacity: 0.5;
+    }
+  </style>
 </head>
 <body>
   {% if page.splash %}
@@ -20,6 +42,8 @@
   </div>
   <script src="{{ '/components/splash.js' | relative_url }}"></script>
   {% endif %}
+
+  <div id="vanta-bg"></div>
 
   <header id="site-header">
     <div class="header-bg"></div>
@@ -37,6 +61,12 @@
             <line x1="21" y1="12" x2="23" y2="12"/>
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <button class="theme-toggle anim-toggle" id="anim-toggle" aria-label="Toggle animation">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
           </svg>
         </button>
         <button class="header-dot" id="header-toggle" aria-label="Toggle navigation"></button>
@@ -57,6 +87,7 @@
   <footer>
     Built with Jekyll
   </footer>
+
   <script>
   (function(){
     var header = document.getElementById('site-header');
@@ -64,6 +95,10 @@
     var timeout;
     var forced = false;
     var consentGiven = localStorage.getItem('consentGiven') === 'true';
+    var vantaEffect = null;
+    var animEnabled = consentGiven ? localStorage.getItem('animEnabled') !== 'false' : true;
+    var root = document.documentElement;
+    var animToggle = document.getElementById('anim-toggle');
 
     function expand() { if (!forced) header.classList.add('expanded'); }
     function collapse() { if (!forced) header.classList.remove('expanded'); }
@@ -83,10 +118,94 @@
       }
     }
 
+    function getAdaptivePoints() {
+      var width = window.innerWidth;
+      if (width < 768) return 15;
+      if (width < 1200) return 20;
+      return 25;
+    }
+
+    function getAdaptiveSpacing() {
+      var width = window.innerWidth;
+      if (width < 768) return 25;
+      if (width < 1200) return 22;
+      return 20;
+    }
+
+    function initVanta() {
+      if (!animEnabled || vantaEffect) return;
+      var isLight = root.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        vantaEffect = VANTA.CELLS({
+          el: "#vanta-bg",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 3.0,
+          backgroundAlpha: 1,
+          backgroundColor: 0xd7d8cf,
+          color1: 0xa7a797,
+          color2: 0x61667f,
+          amplitudeFactor: 1.0,
+          ringFactor: 1.0,
+          rotationFactor: 1.0,
+          speed: 5.0,
+          size: 0.9
+        });
+      } else {
+        vantaEffect = VANTA.TOPOLOGY({
+          el: "#vanta-bg",
+          mouseControls: false,
+          touchControls: false,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 0.5,
+          scaleMobile: 0.5,
+          color: 0xffffff,
+          backgroundColor: 0x0D0F12,
+          points: getAdaptivePoints(),
+          maxDistance: 15.00,
+          spacing: getAdaptiveSpacing()
+        });
+      }
+    }
+
+    function destroyVanta() {
+      if (vantaEffect) {
+        vantaEffect.destroy();
+        vantaEffect = null;
+      }
+    }
+
+    function updateVanta() {
+      if (!animEnabled) return;
+      destroyVanta();
+      initVanta();
+    }
+
+    function updateAnimButton() {
+      if (!animToggle) return;
+      if (animEnabled) {
+        animToggle.classList.remove('off');
+      } else {
+        animToggle.classList.add('off');
+      }
+    }
+
     if (consentGiven) {
       forced = localStorage.getItem('headerExpanded') === 'true';
       if (forced) header.classList.add('expanded');
+      animEnabled = localStorage.getItem('animEnabled') !== 'false';
     }
+
+    if (animEnabled) {
+      initVanta();
+    }
+    updateAnimButton();
 
     document.querySelectorAll('img').forEach(function(img) {
         img.addEventListener('click', function() {
@@ -131,8 +250,24 @@
       };
     }
 
+    if (animToggle) {
+      animToggle.onclick = function() {
+        animEnabled = !animEnabled;
+        if (animEnabled) {
+          initVanta();
+        } else {
+          destroyVanta();
+        }
+        updateAnimButton();
+        requestConsent(function(granted) {
+          if (granted) {
+            localStorage.setItem('animEnabled', animEnabled);
+          }
+        });
+      };
+    }
+
     var themeToggle = document.getElementById('theme-toggle');
-    var root = document.documentElement;
     var saved = consentGiven ? localStorage.getItem('theme') : null;
 
     function updateThemeIcon() {
@@ -165,6 +300,9 @@
           root.removeAttribute('data-theme');
         }
         updateThemeIcon();
+        if (animEnabled) {
+          updateVanta();
+        }
         requestConsent(function(granted) {
           if (granted) {
             localStorage.setItem('theme', newTheme);
@@ -181,6 +319,15 @@
           root.setAttribute('data-theme', 'light');
         }
         updateThemeIcon();
+        if (animEnabled) {
+          updateVanta();
+        }
+      }
+    });
+
+    window.addEventListener('resize', function() {
+      if (animEnabled && vantaEffect) {
+        updateVanta();
       }
     });
 
