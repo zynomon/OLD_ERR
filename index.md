@@ -1,6 +1,6 @@
 ---
 layout: default
-splash: true
+splash: false
 title: "Home"
 description: "Welcome to the homepage"
 embed-thumbnail: /icons/thumb.png
