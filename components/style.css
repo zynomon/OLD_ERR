@@ -303,6 +303,7 @@ main {
     overflow-wrap: break-word;
     position: relative;
     overflow: visible;
+    background-color: var(--bg-0);
 }
 
 main::after {
