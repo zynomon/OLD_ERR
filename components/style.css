@@ -1,4 +1,5 @@
 :root {
+    --bg-0: #000000;
     --bg-1: #0a0a0a;
     --bg-2: #0f0f0f;
     --bg-3: #141414;
@@ -26,6 +27,7 @@
 }
 
 [data-theme="light"] {
+    --bg-0: #ffffff;
     --bg-1: #f0f8ff;
     --bg-2: #e6f3ff;
     --bg-3: #dceefc;
@@ -154,7 +156,7 @@ header:hover .header-bg {
 
 header.expanded .header-title {
     position: relative;
-    left: 0;
+    left: -50%;
     transform: translateX(0);
 }
 
@@ -210,7 +212,6 @@ header.expanded .header-title {
 .header-nav {
     display: flex;
     gap: 32px;
-    padding: 0 28px 20px 28px;
     background: inherit;
     backdrop-filter: blur(12px);
     position: relative;
@@ -294,7 +295,6 @@ main {
     width: 70%;
     margin: 120px auto 2rem auto;
     padding: 2rem;
-    background: linear-gradient(145deg, var(--bg-2), var(--bg-3));
     border: 1px solid var(--line);
     border-radius: 28px;
     box-shadow: var(--shadow-out);
@@ -394,7 +394,7 @@ code {
 pre {
     margin: 1.25rem 0;
     padding: 1.25rem;
-    background: linear-gradient(145deg, var(--bg-3), var(--bg-2));
+    background: linear-gradient(145deg, var(--bg-0), var(--bg-1));
     border: 1px solid var(--line);
     border-radius: 16px;
     box-shadow:
@@ -405,7 +405,7 @@ pre {
 }
 
 pre::before {
-    content: "▼";
+    content: ">_";
     position: absolute;
     top: 8px;
     right: 12px;
@@ -684,10 +684,14 @@ footer {
     }
 
     main {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        box-shadow: none;
-        background: none;
+        margin-top: 100px;
+        padding: 2rem;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow-out);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        position: relative;
+        overflow: visible;
     }
 }
