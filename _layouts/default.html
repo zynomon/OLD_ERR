@@ -57,17 +57,36 @@
   <footer>
     Built with Jekyll
   </footer>
-
   <script>
   (function(){
     var header = document.getElementById('site-header');
     var toggleBtn = document.getElementById('header-toggle');
     var timeout;
     var forced = false;
+    var consentGiven = localStorage.getItem('consentGiven') === 'true';
 
     function expand() { if (!forced) header.classList.add('expanded'); }
-
     function collapse() { if (!forced) header.classList.remove('expanded'); }
+
+    function requestConsent(callback) {
+      if (consentGiven) {
+        callback(true);
+        return;
+      }
+      var userChoice = confirm('This will save your preferences using cookies. OK to continue, Cancel to skip.');
+      if (userChoice) {
+        consentGiven = true;
+        localStorage.setItem('consentGiven', 'true');
+        callback(true);
+      } else {
+        callback(false);
+      }
+    }
+
+    if (consentGiven) {
+      forced = localStorage.getItem('headerExpanded') === 'true';
+      if (forced) header.classList.add('expanded');
+    }
 
     document.querySelectorAll('img').forEach(function(img) {
         img.addEventListener('click', function() {
@@ -99,13 +118,22 @@
       toggleBtn.onclick = function(e) {
         e.stopPropagation();
         forced = !forced;
-        forced ? header.classList.add('expanded') : header.classList.remove('expanded');
+        if (forced) {
+          header.classList.add('expanded');
+        } else {
+          header.classList.remove('expanded');
+        }
+        requestConsent(function(granted) {
+          if (granted) {
+            localStorage.setItem('headerExpanded', forced);
+          }
+        });
       };
     }
 
     var themeToggle = document.getElementById('theme-toggle');
     var root = document.documentElement;
-    var saved = localStorage.getItem('theme');
+    var saved = consentGiven ? localStorage.getItem('theme') : null;
 
     function updateThemeIcon() {
       if (!themeToggle) return;
@@ -115,23 +143,46 @@
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
     }
 
-    if (saved === 'light') {
-      root.setAttribute('data-theme', 'light');
-      updateThemeIcon();
+    if (saved) {
+      if (saved === 'light') {
+        root.setAttribute('data-theme', 'light');
+      } else {
+        root.removeAttribute('data-theme');
+      }
+    } else {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        root.setAttribute('data-theme', 'light');
+      }
     }
+    updateThemeIcon();
 
     if (themeToggle) {
       themeToggle.onclick = function() {
-        if (root.getAttribute('data-theme') === 'light') {
-          root.removeAttribute('data-theme');
-          localStorage.setItem('theme', 'dark');
-        } else {
+        var newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        if (newTheme === 'light') {
           root.setAttribute('data-theme', 'light');
-          localStorage.setItem('theme', 'light');
+        } else {
+          root.removeAttribute('data-theme');
         }
         updateThemeIcon();
+        requestConsent(function(granted) {
+          if (granted) {
+            localStorage.setItem('theme', newTheme);
+          }
+        });
       };
     }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('theme') || !consentGiven) {
+        if (e.matches) {
+          root.removeAttribute('data-theme');
+        } else {
+          root.setAttribute('data-theme', 'light');
+        }
+        updateThemeIcon();
+      }
+    });
 
     var COPY = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
     var CHECK = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
