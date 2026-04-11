@@ -61,11 +61,10 @@ body {
 
 header {
     position: fixed;
-    top: 20px;
+    top: 12px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 40px);
-    max-width: 1400px;
+    width: 98%;
     z-index: 1000;
     background: rgba(26, 26, 26, 0.85);
     backdrop-filter: blur(12px);
@@ -74,14 +73,6 @@ header {
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     user-select: none;
     overflow: hidden;
-    position: fixed;
-}
-
-@media (max-width: 768px) {
-    header {
-        top: 10px;
-        width: calc(100% - 20px);
-    }
 }
 
 [data-theme="light"] header {
@@ -110,10 +101,14 @@ header:hover .header-bg {
 .header-top {
     padding: 16px 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     position: relative;
     z-index: 1;
+}
+
+header:hover .header-top {
+    justify-content: space-between;
 }
 
 .header-title {
@@ -127,6 +122,12 @@ header:hover .header-bg {
     display: flex;
     gap: 12px;
     align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+header:hover .header-controls {
+    opacity: 1;
 }
 
 .theme-toggle {
@@ -184,15 +185,16 @@ header:hover .header-bg {
     background: rgba(200, 200, 200, 0.85);
 }
 
-header.expanded .header-nav {
-    max-height: 100px;
+header:hover .header-nav {
+    max-height: 200px;
     opacity: 1;
     padding: 0 24px 16px 24px;
 }
 
 .header-nav a {
     color: var(--txt);
-    font-size: 13px;
+    font-size: 16px;
+    font-weight: 500;
     text-decoration: none;
     text-transform: lowercase;
     letter-spacing: 1px;
@@ -201,7 +203,7 @@ header.expanded .header-nav {
     transform: translateY(-10px);
 }
 
-header.expanded .header-nav a {
+header:hover .header-nav a {
     opacity: 1;
     transform: translateY(0);
 }
@@ -242,16 +244,21 @@ main {
 
 @media (max-width: 768px) {
     main {
-        width: 100%;
+        width: 95%;
         margin-top: 80px;
         padding: 1rem;
-        background: transparent;
-        border: none;
-        border-radius: 0;
     }
 
     .header-title {
         font-size: 20px;
+    }
+
+    .header-nav a {
+        font-size: 13px;
+    }
+
+    .header-nav {
+        gap: 16px;
     }
 }
 
