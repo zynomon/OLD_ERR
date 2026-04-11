@@ -68,9 +68,25 @@
     function expand() { if (!forced) header.classList.add('expanded'); }
 
     function collapse() { if (!forced) header.classList.remove('expanded'); }
+
     document.querySelectorAll('img').forEach(function(img) {
         img.addEventListener('click', function() {
             window.open(this.src, '_blank');
+        });
+
+        img.addEventListener('mousemove', function(e) {
+            var rect = this.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var centerX = (x / rect.width) - 0.5;
+            var centerY = (y / rect.height) - 0.5;
+            this.style.setProperty('--mouse-x', centerX);
+            this.style.setProperty('--mouse-y', centerY);
+        });
+
+        img.addEventListener('mouseleave', function() {
+            this.style.setProperty('--mouse-x', 0);
+            this.style.setProperty('--mouse-y', 0);
         });
     });
 
