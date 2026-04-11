@@ -111,10 +111,11 @@ header.expanded .header-top {
     justify-content: space-between;
 }
 
-.header-icon {
-    width: 32px;
-    height: 32px;
-    display: block;
+.header-title {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--txt);
 }
 
 .header-dot {
