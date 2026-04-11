@@ -60,10 +60,13 @@ body {
 }
 
 header {
-    position: sticky;
-    top: 12px;
-    margin: 0 12px;
-    z-index: 100;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 1400px;
+    z-index: 1000;
     background: rgba(26, 26, 26, 0.85);
     backdrop-filter: blur(12px);
     border: 1px solid var(--line);
@@ -71,20 +74,14 @@ header {
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     user-select: none;
     overflow: hidden;
-    position: relative;
+    position: fixed;
 }
 
-header::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
-    pointer-events: none;
-    border-radius: inherit;
-    z-index: 0;
+@media (max-width: 768px) {
+    header {
+        top: 10px;
+        width: calc(100% - 20px);
+    }
 }
 
 [data-theme="light"] header {
@@ -115,7 +112,6 @@ header:hover .header-bg {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     position: relative;
     z-index: 1;
 }
@@ -125,16 +121,6 @@ header:hover .header-bg {
     font-weight: 500;
     letter-spacing: 2px;
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-}
-
-header.expanded .header-title {
-    position: relative;
-    left: 0;
-    transform: translateX(0);
 }
 
 .header-controls {
@@ -245,7 +231,7 @@ header.expanded .header-nav a {
 main {
     flex: 1;
     width: 70%;
-    margin: 2rem auto;
+    margin: 100px auto 2rem auto;
     padding: 1.5rem;
     background: var(--bg-2);
     border: 1px solid var(--line);
@@ -257,7 +243,7 @@ main {
 @media (max-width: 768px) {
     main {
         width: 100%;
-        margin: 0;
+        margin-top: 80px;
         padding: 1rem;
         background: transparent;
         border: none;
