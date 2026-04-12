@@ -306,7 +306,7 @@ main {
     overflow-wrap: break-word;
     position: relative;
     overflow: visible;
-    background-color: (in srgb, var(--bg-1) 90%, transparent);
+    background-color: var(--bg-1);
 }
 
 main::after {
@@ -669,9 +669,15 @@ footer {
     }
 }
 
+@media (max-width: 500px) {
+    .theme-toggle {
+        display: none; /*idk what will go on you mobile nerds*/
+    }
+}
+
 @media (max-width: 768px) {
     main {
-        width: 95%;
+        width: 98%;
         margin-top: 100px;
         padding: 2rem;
         border: 1px solid var(--line);
