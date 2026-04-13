@@ -8,9 +8,9 @@
   <meta property="og:title" content="{{ page.title }}">
   <meta property="og:description" content="{{ page.description }}">
   <meta property="og:image" content="{{ '/icon/thumb.png' | relative_url }}">
-      {% if page.icon %}
-        <link rel="icon" type="image/svg+xml" href="{{ '/icon/' | append: page.icon | relative_url }}">
-      {% endif %}
+  {% if page.icon %}
+    <link rel="icon" type="image/svg+xml" href="{{ '/icon/' | append: page.icon | relative_url }}">
+  {% endif %}
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/components/style.css' | relative_url }}">
   <link href="https://fonts.cdnfonts.com/css/ocr-a-extended" rel="stylesheet">
@@ -22,7 +22,6 @@
   <div id="splash-screen">
     <span class="system-title">{{ page.title }}</span>
   </div>
-
   <script src="{{ '/components/splash.js' | relative_url }}"></script>
   {% endif %}
 
@@ -42,7 +41,7 @@
       <a href="{{ '/' | relative_url }}" {% if page.url == '/' or page.url == '/index.html' %}class="active"{% endif %} data-icon="home">Start</a>
       <a href="{{ '/download/' | relative_url }}" {% if page.url contains '/download' %}class="active"{% endif %} data-icon="download">Download</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url contains '/faq' %}class="active"{% endif %} data-icon="about">FAQ</a>
-       <a href="https://zynomon.github.io/error.doc" data-icon="wiki">Wiki</a>
+      <a href="https://zynomon.github.io/error.doc" data-icon="wiki">Wiki</a>
       <a href="https://github.com/zynomon/error" data-icon="github">Github</a>
       <a href="https://discord.gg/Jn7FBwu99F" data-icon="discord">Discord</a>
     </div>
@@ -63,12 +62,12 @@
       var timeout;
       var forced = false;
       var consentGiven = false;
+      
       try {
         consentGiven = localStorage.getItem('consentGiven') === 'true';
       } catch(e) {}
 
       var vantaEffect = null;
-      var vantaType = 'topology';
       var cores = navigator.hardwareConcurrency || 1;
       var ram = navigator.deviceMemory || 1;
       var isLowEndDevice = (cores <= 2 || ram <= 2);
@@ -92,7 +91,6 @@
         var img = document.createElement('img');
         img.src = src;
         img.alt = alt || '';
-        img.className = 'icon-img';
         if (width) img.style.width = width;
         if (height) img.style.height = height;
         return img;
@@ -152,10 +150,6 @@
         threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
         document.head.appendChild(threeScript);
 
-        var fogScript = document.createElement('script');
-        fogScript.src = 'https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js';
-        document.head.appendChild(fogScript);
-
         var topologyScript = document.createElement('script');
         topologyScript.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js';
         topologyScript.onload = function() {
@@ -172,44 +166,35 @@
         if (!el) return;
 
         var isLight = root.getAttribute('data-theme') === 'light';
-
         setBodyTransparent(true);
+        
+        if (typeof VANTA === 'undefined' || typeof VANTA.TOPOLOGY === 'undefined') {
+          return;
+        }
+
+        var config = {
+          el: el,
+          mouseControls: !isLowEndDevice,
+          touchControls: !isLowEndDevice,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 0.5,
+          scaleMobile: 0.5,
+          points: getAdaptivePoints(),
+          maxDistance: isLowEndDevice ? 12.00 : 15.00,
+          spacing: getAdaptiveSpacing()
+        };
 
         if (isLight) {
-          vantaType = 'fog';
-          vantaEffect = VANTA.FOG({
-            el: el,
-            mouseControls: !isLowEndDevice,
-            touchControls: !isLowEndDevice,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            highlightColor: 0x7f7f7f,
-            midtoneColor: 0xffffff,
-            lowlightColor: 0x0,
-            baseColor: 0xffffff,
-            blurFactor: 0.56,
-            speed: 5.00,
-            zoom: 1.80
-          });
+          config.color = 0x888888;
+          config.backgroundColor = 0xffffff;
         } else {
-          vantaType = 'topology';
-          vantaEffect = VANTA.TOPOLOGY({
-            el: el,
-            mouseControls: false,
-            touchControls: false,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 0.5,
-            scaleMobile: 0.5,
-            color: 0xffffff,
-            backgroundColor: 0x0D0F12,
-            points: getAdaptivePoints(),
-            maxDistance: isLowEndDevice ? 12.00 : 15.00,
-            spacing: getAdaptiveSpacing()
-          });
+          config.color = 0xffffff;
+          config.backgroundColor = 0x0D0F12;
         }
+
+        vantaEffect = VANTA.TOPOLOGY(config);
       }
 
       function destroyVanta() {
@@ -233,29 +218,15 @@
         if (!vantaEffect || !animEnabled) return;
 
         try {
-          if (isLight && vantaType !== 'fog') {
-            destroyVanta();
-            initVanta();
-          } else if (!isLight && vantaType !== 'topology') {
-            destroyVanta();
-            initVanta();
-          } else if (isLight) {
+          if (isLight) {
             vantaEffect.setOptions({
-              highlightColor: 0x7f7f7f,
-              midtoneColor: 0xffffff,
-              lowlightColor: 0x0,
-              baseColor: 0xffffff,
-              blurFactor: 0.56,
-              speed: 5.00,
-              zoom: 1.80
+              color: 0x888888,
+              backgroundColor: 0xffffff
             });
           } else {
             vantaEffect.setOptions({
               color: 0xffffff,
-              backgroundColor: 0x0D0F12,
-              points: getAdaptivePoints(),
-              maxDistance: isLowEndDevice ? 12.00 : 15.00,
-              spacing: getAdaptiveSpacing()
+              backgroundColor: 0x0D0F12
             });
           }
         } catch(e) {
@@ -279,7 +250,7 @@
 
       function startVanta() {
         if (animEnabled && !isLowEndDevice) {
-          if (typeof VANTA === 'undefined') {
+          if (typeof VANTA === 'undefined' || typeof VANTA.TOPOLOGY === 'undefined') {
             loadVantaScripts(function() {
               setTimeout(initVanta, 100);
             });
@@ -289,7 +260,6 @@
         } else if (isLowEndDevice) {
           animEnabled = false;
           updateAnimButton();
-          console.info('Animations disabled: low-end device detected');
         }
       }
 
@@ -307,25 +277,25 @@
       updateAnimButton();
       startVanta();
 
-      document.querySelectorAll('img:not(.icon-img):not(.nav-favicon)').forEach(function(img){
-          img.addEventListener('click', function() {
-              window.open(this.src, '_blank');
-          });
+      document.querySelectorAll('img:not(.nav-favicon)').forEach(function(img) {
+        img.addEventListener('click', function() {
+          window.open(this.src, '_blank');
+        });
 
-          img.addEventListener('mousemove', function(e) {
-              var rect = this.getBoundingClientRect();
-              var x = e.clientX - rect.left;
-              var y = e.clientY - rect.top;
-              var centerX = (x / rect.width) - 0.5;
-              var centerY = (y / rect.height) - 0.5;
-              this.style.setProperty('--mouse-x', centerX);
-              this.style.setProperty('--mouse-y', centerY);
-          });
+        img.addEventListener('mousemove', function(e) {
+          var rect = this.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
+          var centerX = (x / rect.width) - 0.5;
+          var centerY = (y / rect.height) - 0.5;
+          this.style.setProperty('--mouse-x', centerX);
+          this.style.setProperty('--mouse-y', centerY);
+        });
 
-          img.addEventListener('mouseleave', function() {
-              this.style.setProperty('--mouse-x', 0);
-              this.style.setProperty('--mouse-y', 0);
-          });
+        img.addEventListener('mouseleave', function() {
+          this.style.setProperty('--mouse-x', 0);
+          this.style.setProperty('--mouse-y', 0);
+        });
       });
 
       if (header) {
@@ -453,39 +423,39 @@
         }
       });
 
-      var COPY_ICON = createIcon('https://api.iconify.design/line-md:clipboard.svg', 'Copy', '14px', '14px');
-      var CHECK_ICON = createIcon('https://api.iconify.design/line-md:clipboard-check.svg', 'Copied', '14px', '14px');
-
-      var COPY_HTML = '<div style="width:14px;height:14px;"></div>';
-      var CHECK_HTML = '<div style="width:14px;height:14px;"></div>';
-
-      var tempCopyContainer = document.createElement('div');
-      tempCopyContainer.appendChild(COPY_ICON.cloneNode(true));
-      var COPY = tempCopyContainer.innerHTML;
-
-      var tempCheckContainer = document.createElement('div');
-      tempCheckContainer.appendChild(CHECK_ICON.cloneNode(true));
-      var CHECK = tempCheckContainer.innerHTML;
-
-      document.querySelectorAll('pre code').forEach(function(c){
-        var p = c.parentElement;
-        if(p.parentElement.classList.contains('code-block-wrapper')) return;
-        var w = document.createElement('div');
-        w.className = 'code-block-wrapper';
-        p.parentNode.insertBefore(w, p);
-        w.appendChild(p);
-        var b = document.createElement('button');
-        b.className = 'copy-btn';
-        b.innerHTML = COPY;
-        b.setAttribute('aria-label', 'Copy code');
-        b.onclick = function(){
-          navigator.clipboard.writeText(c.textContent).then(function(){
-            b.innerHTML = CHECK;
-            b.classList.add('copied');
-            setTimeout(function(){ b.innerHTML = COPY; b.classList.remove('copied'); }, 2000);
+      document.querySelectorAll('pre code').forEach(function(codeBlock) {
+        var pre = codeBlock.parentElement;
+        if (pre.parentElement.classList.contains('code-block-wrapper')) return;
+        
+        var wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+        
+        var copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.setAttribute('aria-label', 'Copy code');
+        
+        var copyIcon = createIcon('https://api.iconify.design/line-md:clipboard.svg', 'Copy', '14px', '14px');
+        copyBtn.appendChild(copyIcon);
+        
+        copyBtn.onclick = function() {
+          navigator.clipboard.writeText(codeBlock.textContent).then(function() {
+            copyBtn.innerHTML = '';
+            var checkIcon = createIcon('https://api.iconify.design/line-md:clipboard-check.svg', 'Copied', '14px', '14px');
+            copyBtn.appendChild(checkIcon);
+            copyBtn.classList.add('copied');
+            
+            setTimeout(function() {
+              copyBtn.innerHTML = '';
+              var newCopyIcon = createIcon('https://api.iconify.design/line-md:clipboard.svg', 'Copy', '14px', '14px');
+              copyBtn.appendChild(newCopyIcon);
+              copyBtn.classList.remove('copied');
+            }, 2000);
           });
         };
-        w.appendChild(b);
+        
+        wrapper.appendChild(copyBtn);
       });
 
       (function initNavEffects() {
