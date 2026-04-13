@@ -57,180 +57,133 @@
   </footer>
 
   <script>
-  (function(){
-    var header = document.getElementById('site-header');
-    var toggleBtn = document.getElementById('header-toggle');
-    var timeout;
-    var forced = false;
-    var consentGiven = false;
-    try {
-      consentGiven = localStorage.getItem('consentGiven') === 'true';
-    } catch(e) {}
+    (function(){
+      var header = document.getElementById('site-header');
+      var toggleBtn = document.getElementById('header-toggle');
+      var timeout;
+      var forced = false;
+      var consentGiven = false;
+      try {
+        consentGiven = localStorage.getItem('consentGiven') === 'true';
+      } catch(e) {}
 
-    var vantaEffect = null;
-    var vantaType = 'topology';
-    var cores = navigator.hardwareConcurrency || 1;
-    var ram = navigator.deviceMemory || 1;
-    var isLowEndDevice = (cores <= 2 || ram <= 2);
+      var vantaEffect = null;
+      var vantaType = 'topology';
+      var cores = navigator.hardwareConcurrency || 1;
+      var ram = navigator.deviceMemory || 1;
+      var isLowEndDevice = (cores <= 2 || ram <= 2);
 
-    var animEnabled = true;
-    try {
-      if (consentGiven) {
-        animEnabled = localStorage.getItem('animEnabled') !== 'false';
-      } else {
+      var animEnabled = true;
+      try {
+        if (consentGiven) {
+          animEnabled = localStorage.getItem('animEnabled') !== 'false';
+        } else {
+          animEnabled = !isLowEndDevice;
+        }
+      } catch(e) {
         animEnabled = !isLowEndDevice;
       }
-    } catch(e) {
-      animEnabled = !isLowEndDevice;
-    }
 
-    var root = document.documentElement;
-    var animToggle = document.getElementById('anim-toggle');
-    var scriptsLoaded = false;
+      var root = document.documentElement;
+      var animToggle = document.getElementById('anim-toggle');
+      var scriptsLoaded = false;
 
-    function expand() { if (!forced) header.classList.add('expanded'); }
-    function collapse() { if (!forced) header.classList.remove('expanded'); }
-
-    function setBodyTransparent(transparent) {
-      if (transparent) {
-        document.body.style.setProperty('background', 'transparent', 'important');
-      } else {
-        document.body.style.setProperty('background', '', '');
-      }
-    }
-
-    function requestConsent(callback) {
-      if (consentGiven) {
-        callback(true);
-        return;
-      }
-      var userChoice = confirm('This will save your preferences using cookies. OK to continue, Cancel to skip.');
-      if (userChoice) {
-        consentGiven = true;
-        try {
-          localStorage.setItem('consentGiven', 'true');
-        } catch(e) {}
-        callback(true);
-      } else {
-        callback(false);
-      }
-    }
-
-    function getAdaptivePoints() {
-      if (isLowEndDevice) return 8;
-      var width = window.innerWidth;
-      if (width < 768) return 12;
-      if (width < 1200) return 18;
-      return 25;
-    }
-
-    function getAdaptiveSpacing() {
-      if (isLowEndDevice) return 30;
-      var width = window.innerWidth;
-      if (width < 768) return 28;
-      if (width < 1200) return 24;
-      return 20;
-    }
-
-    function loadVantaScripts(callback) {
-      if (scriptsLoaded) {
-        callback();
-        return;
+      function createIcon(src, alt, width, height) {
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = alt || '';
+        img.className = 'icon-img';
+        if (width) img.style.width = width;
+        if (height) img.style.height = height;
+        return img;
       }
 
-      var threeScript = document.createElement('script');
-      threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      document.head.appendChild(threeScript);
+      function expand() { if (!forced) header.classList.add('expanded'); }
+      function collapse() { if (!forced) header.classList.remove('expanded'); }
 
-      var fogScript = document.createElement('script');
-      fogScript.src = 'https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js';
-      document.head.appendChild(fogScript);
-
-      var topologyScript = document.createElement('script');
-      topologyScript.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js';
-      topologyScript.onload = function() {
-        scriptsLoaded = true;
-        callback();
-      };
-      document.head.appendChild(topologyScript);
-    }
-
-    function initVanta() {
-      if (!animEnabled || vantaEffect) return;
-
-      var el = document.getElementById('vanta-bg');
-      if (!el) return;
-
-      var isLight = root.getAttribute('data-theme') === 'light';
-
-      setBodyTransparent(true);
-
-      if (isLight) {
-        vantaType = 'fog';
-        vantaEffect = VANTA.FOG({
-          el: el,
-          mouseControls: !isLowEndDevice,
-          touchControls: !isLowEndDevice,
-          gyroControls: false,
-          minHeight: 200.00,
-          minWidth: 200.00,
-          highlightColor: 0x7f7f7f,
-          midtoneColor: 0xffffff,
-          lowlightColor: 0x0,
-          baseColor: 0xffffff,
-          blurFactor: 0.56,
-          speed: 5.00,
-          zoom: 1.80
-        });
-      } else {
-        vantaType = 'topology';
-        vantaEffect = VANTA.TOPOLOGY({
-          el: el,
-          mouseControls: false,
-          touchControls: false,
-          gyroControls: false,
-          minHeight: 200.00,
-          minWidth: 200.00,
-          scale: 0.5,
-          scaleMobile: 0.5,
-          color: 0xffffff,
-          backgroundColor: 0x0D0F12,
-          points: getAdaptivePoints(),
-          maxDistance: isLowEndDevice ? 12.00 : 15.00,
-          spacing: getAdaptiveSpacing()
-        });
-      }
-    }
-
-    function destroyVanta() {
-      if (vantaEffect) {
-        try {
-          vantaEffect.destroy();
-        } catch(e) {}
-        vantaEffect = null;
-      }
-      var el = document.getElementById('vanta-bg');
-      if (el) {
-        el.style.background = '';
-        while (el.firstChild) {
-          el.removeChild(el.firstChild);
+      function setBodyTransparent(transparent) {
+        if (transparent) {
+          document.body.style.setProperty('background', 'transparent', 'important');
+        } else {
+          document.body.style.setProperty('background', '', '');
         }
       }
-      setBodyTransparent(false);
-    }
 
-    function updateVantaTheme(isLight) {
-      if (!vantaEffect || !animEnabled) return;
+      function requestConsent(callback) {
+        if (consentGiven) {
+          callback(true);
+          return;
+        }
+        var userChoice = confirm('This will save your preferences using cookies. OK to continue, Cancel to skip.');
+        if (userChoice) {
+          consentGiven = true;
+          try {
+            localStorage.setItem('consentGiven', 'true');
+          } catch(e) {}
+          callback(true);
+        } else {
+          callback(false);
+        }
+      }
 
-      try {
-        if (isLight && vantaType !== 'fog') {
-          destroyVanta();
-          initVanta();
-        } else if (!isLight && vantaType !== 'topology') {
-          destroyVanta();
-          initVanta();
-        } else if (isLight) {
-          vantaEffect.setOptions({
+      function getAdaptivePoints() {
+        if (isLowEndDevice) return 8;
+        var width = window.innerWidth;
+        if (width < 768) return 12;
+        if (width < 1200) return 18;
+        return 25;
+      }
+
+      function getAdaptiveSpacing() {
+        if (isLowEndDevice) return 30;
+        var width = window.innerWidth;
+        if (width < 768) return 28;
+        if (width < 1200) return 24;
+        return 20;
+      }
+
+      function loadVantaScripts(callback) {
+        if (scriptsLoaded) {
+          callback();
+          return;
+        }
+
+        var threeScript = document.createElement('script');
+        threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        document.head.appendChild(threeScript);
+
+        var fogScript = document.createElement('script');
+        fogScript.src = 'https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js';
+        document.head.appendChild(fogScript);
+
+        var topologyScript = document.createElement('script');
+        topologyScript.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js';
+        topologyScript.onload = function() {
+          scriptsLoaded = true;
+          callback();
+        };
+        document.head.appendChild(topologyScript);
+      }
+
+      function initVanta() {
+        if (!animEnabled || vantaEffect) return;
+
+        var el = document.getElementById('vanta-bg');
+        if (!el) return;
+
+        var isLight = root.getAttribute('data-theme') === 'light';
+
+        setBodyTransparent(true);
+
+        if (isLight) {
+          vantaType = 'fog';
+          vantaEffect = VANTA.FOG({
+            el: el,
+            mouseControls: !isLowEndDevice,
+            touchControls: !isLowEndDevice,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
             highlightColor: 0x7f7f7f,
             midtoneColor: 0xffffff,
             lowlightColor: 0x0,
@@ -240,7 +193,16 @@
             zoom: 1.80
           });
         } else {
-          vantaEffect.setOptions({
+          vantaType = 'topology';
+          vantaEffect = VANTA.TOPOLOGY({
+            el: el,
+            mouseControls: false,
+            touchControls: false,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 0.5,
+            scaleMobile: 0.5,
             color: 0xffffff,
             backgroundColor: 0x0D0F12,
             points: getAdaptivePoints(),
@@ -248,273 +210,335 @@
             spacing: getAdaptiveSpacing()
           });
         }
-      } catch(e) {
-        destroyVanta();
-        initVanta();
       }
-    }
 
-    function updateAnimButton() {
-      if (!animToggle) return;
-      if (animEnabled) {
-        animToggle.classList.remove('off');
-        animToggle.innerHTML = '<img src="https://api.iconify.design/line-md:car-light.svg" alt="Animation On" style="width:18px;height:18px;">';
-      } else {
-        animToggle.classList.add('off');
-        animToggle.innerHTML = '<img src="https://api.iconify.design/line-md:car-light-off.svg" alt="Animation Off" style="width:18px;height:18px;">';
-      }
-    }
-
-    function startVanta() {
-      if (animEnabled && !isLowEndDevice) {
-        if (typeof VANTA === 'undefined') {
-          loadVantaScripts(function() {
-            setTimeout(initVanta, 100);
-          });
-        } else {
-          initVanta();
+      function destroyVanta() {
+        if (vantaEffect) {
+          try {
+            vantaEffect.destroy();
+          } catch(e) {}
+          vantaEffect = null;
         }
-      } else if (isLowEndDevice) {
-        animEnabled = false;
-        updateAnimButton();
-        console.info('Animations disabled: low-end device detected');
-      }
-    }
-
-    try {
-      if (consentGiven) {
-        forced = localStorage.getItem('headerExpanded') === 'true';
-        if (forced) header.classList.add('expanded');
-        var savedAnim = localStorage.getItem('animEnabled');
-        if (savedAnim !== null) {
-          animEnabled = savedAnim !== 'false';
-        }
-      }
-    } catch(e) {}
-
-    updateAnimButton();
-    startVanta();
-
-    document.querySelectorAll('img:not(.nav-favicon)').forEach(function(img) {
-        img.addEventListener('click', function() {
-            window.open(this.src, '_blank');
-        });
-
-        img.addEventListener('mousemove', function(e) {
-            var rect = this.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
-            var centerX = (x / rect.width) - 0.5;
-            var centerY = (y / rect.height) - 0.5;
-            this.style.setProperty('--mouse-x', centerX);
-            this.style.setProperty('--mouse-y', centerY);
-        });
-
-        img.addEventListener('mouseleave', function() {
-            this.style.setProperty('--mouse-x', 0);
-            this.style.setProperty('--mouse-y', 0);
-        });
-    });
-
-    if (header) {
-      header.onmouseenter = function() { clearTimeout(timeout); expand(); };
-      header.onmouseleave = function() { timeout = setTimeout(collapse, 150); };
-    }
-
-    if (toggleBtn) {
-      toggleBtn.onclick = function(e) {
-        e.stopPropagation();
-        forced = !forced;
-        if (forced) {
-          header.classList.add('expanded');
-        } else {
-          header.classList.remove('expanded');
-        }
-        requestConsent(function(granted) {
-          if (granted) {
-            try {
-              localStorage.setItem('headerExpanded', forced);
-            } catch(e) {}
+        var el = document.getElementById('vanta-bg');
+        if (el) {
+          el.style.background = '';
+          while (el.firstChild) {
+            el.removeChild(el.firstChild);
           }
-        });
-      };
-    }
+        }
+        setBodyTransparent(false);
+      }
 
-    if (animToggle) {
-      animToggle.onclick = function() {
-        if (isLowEndDevice && !animEnabled) {
-          var turnOn = confirm('You are on a lower-end device. It is better to not turn on animations. Turn on anyway?');
-          if (turnOn) {
-            animEnabled = true;
-            startVanta();
-            updateAnimButton();
-            requestConsent(function(granted) {
-              if (granted) {
-                try {
-                  localStorage.setItem('animEnabled', animEnabled);
-                } catch(e) {}
-              }
+      function updateVantaTheme(isLight) {
+        if (!vantaEffect || !animEnabled) return;
+
+        try {
+          if (isLight && vantaType !== 'fog') {
+            destroyVanta();
+            initVanta();
+          } else if (!isLight && vantaType !== 'topology') {
+            destroyVanta();
+            initVanta();
+          } else if (isLight) {
+            vantaEffect.setOptions({
+              highlightColor: 0x7f7f7f,
+              midtoneColor: 0xffffff,
+              lowlightColor: 0x0,
+              baseColor: 0xffffff,
+              blurFactor: 0.56,
+              speed: 5.00,
+              zoom: 1.80
+            });
+          } else {
+            vantaEffect.setOptions({
+              color: 0xffffff,
+              backgroundColor: 0x0D0F12,
+              points: getAdaptivePoints(),
+              maxDistance: isLowEndDevice ? 12.00 : 15.00,
+              spacing: getAdaptiveSpacing()
             });
           }
-          return;
-        }
-        animEnabled = !animEnabled;
-        if (animEnabled) {
-          startVanta();
-        } else {
+        } catch(e) {
           destroyVanta();
+          initVanta();
         }
-        updateAnimButton();
-        requestConsent(function(granted) {
-          if (granted) {
-            try {
-              localStorage.setItem('animEnabled', animEnabled);
-            } catch(e) {}
-          }
-        });
-      };
-    }
-
-    var themeToggle = document.getElementById('theme-toggle');
-    var saved = null;
-    try {
-      saved = consentGiven ? localStorage.getItem('theme') : null;
-    } catch(e) {}
-
-    function updateThemeIcon() {
-      if (!themeToggle) return;
-      themeToggle.innerHTML = '<img src="https://api.iconify.design/line-md:light-dark.svg" alt="Theme" style="width:18px;height:18px;">';
-    }
-
-    if (saved) {
-      if (saved === 'light') {
-        root.setAttribute('data-theme', 'light');
-      } else {
-        root.removeAttribute('data-theme');
       }
-    } else {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        root.setAttribute('data-theme', 'light');
-      }
-    }
-    updateThemeIcon();
 
-    if (themeToggle) {
-      themeToggle.onclick = function() {
-        var newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        var isLight = newTheme === 'light';
-
-        if (isLight) {
-          root.setAttribute('data-theme', 'light');
-        } else {
-          root.removeAttribute('data-theme');
-        }
-        updateThemeIcon();
-
+      function updateAnimButton() {
+        if (!animToggle) return;
         if (animEnabled) {
-          updateVantaTheme(isLight);
-        }
-
-        requestConsent(function(granted) {
-          if (granted) {
-            try {
-              localStorage.setItem('theme', newTheme);
-            } catch(e) {}
-          }
-        });
-      };
-    }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-      if (!localStorage.getItem('theme') || !consentGiven) {
-        var isLight = !e.matches;
-        if (isLight) {
-          root.setAttribute('data-theme', 'light');
+          animToggle.classList.remove('off');
+          animToggle.innerHTML = '';
+          animToggle.appendChild(createIcon('https://api.iconify.design/line-md:car-light.svg', 'Animation On', '18px', '18px'));
         } else {
-          root.removeAttribute('data-theme');
-        }
-        updateThemeIcon();
-        if (animEnabled) {
-          updateVantaTheme(isLight);
+          animToggle.classList.add('off');
+          animToggle.innerHTML = '';
+          animToggle.appendChild(createIcon('https://api.iconify.design/line-md:car-light-off.svg', 'Animation Off', '18px', '18px'));
         }
       }
-    });
 
-    var COPY = '<img src="https://api.iconify.design/line-md:clipboard.svg" alt="Copy" style="width:14px;height:14px;">';
-    var CHECK = '<img src="https://api.iconify.design/line-md:clipboard-check.svg" alt="Copied" style="width:14px;height:14px;">';
-
-    document.querySelectorAll('pre code').forEach(function(c){
-      var p = c.parentElement;
-      if(p.parentElement.classList.contains('code-block-wrapper')) return;
-      var w = document.createElement('div');
-      w.className = 'code-block-wrapper';
-      p.parentNode.insertBefore(w, p);
-      w.appendChild(p);
-      var b = document.createElement('button');
-      b.className = 'copy-btn';
-      b.innerHTML = COPY;
-      b.setAttribute('aria-label', 'Copy code');
-      b.onclick = function(){
-        navigator.clipboard.writeText(c.textContent).then(function(){
-          b.innerHTML = CHECK;
-          b.classList.add('copied');
-          setTimeout(function(){ b.innerHTML = COPY; b.classList.remove('copied'); }, 2000);
-        });
-      };
-      w.appendChild(b);
-    });
-
-    (function initNavEffects() {
-      var navLinks = document.querySelectorAll('.header-nav a');
-      var dimOverlay = document.getElementById('nav-dim-overlay');
-
-      var iconMap = {
-        'home': "{{ '/icon/home.svg' | relative_url }}",
-        'download': "{{ '/icon/doc/downloader.svg' | relative_url }}",
-        'wiki': "{{ '/icon/doc/doc.svg' | relative_url }}",
-        'about': "{{ '/icon/webicon.svg' | relative_url }}",
-        'github': 'https://api.iconify.design/simple-icons:refinedgithub.svg',
-        'discord': 'https://api.iconify.design/logos:discord-icon.svg'
-      };
-
-      navLinks.forEach(function(link) {
-        var iconType = link.getAttribute('data-icon');
-        var favicon = document.createElement('img');
-        favicon.className = 'nav-favicon';
-        favicon.alt = '';
-        favicon.src = iconMap[iconType] || '';
-
-        var href = link.getAttribute('href');
-        var isExternal = href.startsWith('http') || href.startsWith('https');
-        if (isExternal) {
-          link.setAttribute('target', '_blank');
-          link.setAttribute('rel', 'noopener noreferrer');
+      function startVanta() {
+        if (animEnabled && !isLowEndDevice) {
+          if (typeof VANTA === 'undefined') {
+            loadVantaScripts(function() {
+              setTimeout(initVanta, 100);
+            });
+          } else {
+            initVanta();
+          }
+        } else if (isLowEndDevice) {
+          animEnabled = false;
+          updateAnimButton();
+          console.info('Animations disabled: low-end device detected');
         }
+      }
 
-        link.insertBefore(favicon, link.firstChild);
+      try {
+        if (consentGiven) {
+          forced = localStorage.getItem('headerExpanded') === 'true';
+          if (forced) header.classList.add('expanded');
+          var savedAnim = localStorage.getItem('animEnabled');
+          if (savedAnim !== null) {
+            animEnabled = savedAnim !== 'false';
+          }
+        }
+      } catch(e) {}
 
-        link.addEventListener('mouseenter', function() {
-          dimOverlay.classList.add('active');
-          header.style.zIndex = '1001';
-        });
+      updateAnimButton();
+      startVanta();
 
-        link.addEventListener('mouseleave', function() {
-          dimOverlay.classList.remove('active');
-          setTimeout(function() {
-            if (!dimOverlay.classList.contains('active')) {
-              header.style.zIndex = '1000';
+      document.querySelectorAll('img:not(.icon-img):not(.nav-favicon)').forEach(function(img){
+          img.addEventListener('click', function() {
+              window.open(this.src, '_blank');
+          });
+
+          img.addEventListener('mousemove', function(e) {
+              var rect = this.getBoundingClientRect();
+              var x = e.clientX - rect.left;
+              var y = e.clientY - rect.top;
+              var centerX = (x / rect.width) - 0.5;
+              var centerY = (y / rect.height) - 0.5;
+              this.style.setProperty('--mouse-x', centerX);
+              this.style.setProperty('--mouse-y', centerY);
+          });
+
+          img.addEventListener('mouseleave', function() {
+              this.style.setProperty('--mouse-x', 0);
+              this.style.setProperty('--mouse-y', 0);
+          });
+      });
+
+      if (header) {
+        header.onmouseenter = function() { clearTimeout(timeout); expand(); };
+        header.onmouseleave = function() { timeout = setTimeout(collapse, 150); };
+      }
+
+      if (toggleBtn) {
+        toggleBtn.onclick = function(e) {
+          e.stopPropagation();
+          forced = !forced;
+          if (forced) {
+            header.classList.add('expanded');
+          } else {
+            header.classList.remove('expanded');
+          }
+          requestConsent(function(granted) {
+            if (granted) {
+              try {
+                localStorage.setItem('headerExpanded', forced);
+              } catch(e) {}
             }
-          }, 300);
+          });
+        };
+      }
+
+      if (animToggle) {
+        animToggle.onclick = function() {
+          if (isLowEndDevice && !animEnabled) {
+            var turnOn = confirm('You are on a lower-end device. It is better to not turn on animations. Turn on anyway?');
+            if (turnOn) {
+              animEnabled = true;
+              startVanta();
+              updateAnimButton();
+              requestConsent(function(granted) {
+                if (granted) {
+                  try {
+                    localStorage.setItem('animEnabled', animEnabled);
+                  } catch(e) {}
+                }
+              });
+            }
+            return;
+          }
+          animEnabled = !animEnabled;
+          if (animEnabled) {
+            startVanta();
+          } else {
+            destroyVanta();
+          }
+          updateAnimButton();
+          requestConsent(function(granted) {
+            if (granted) {
+              try {
+                localStorage.setItem('animEnabled', animEnabled);
+              } catch(e) {}
+            }
+          });
+        };
+      }
+
+      var themeToggle = document.getElementById('theme-toggle');
+      var saved = null;
+      try {
+        saved = consentGiven ? localStorage.getItem('theme') : null;
+      } catch(e) {}
+
+      function updateThemeIcon() {
+        if (!themeToggle) return;
+        themeToggle.innerHTML = '';
+        themeToggle.appendChild(createIcon('https://api.iconify.design/line-md:light-dark.svg', 'Theme', '18px', '18px'));
+      }
+
+      if (saved) {
+        if (saved === 'light') {
+          root.setAttribute('data-theme', 'light');
+        } else {
+          root.removeAttribute('data-theme');
+        }
+      } else {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          root.setAttribute('data-theme', 'light');
+        }
+      }
+      updateThemeIcon();
+
+      if (themeToggle) {
+        themeToggle.onclick = function() {
+          var newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          var isLight = newTheme === 'light';
+
+          if (isLight) {
+            root.setAttribute('data-theme', 'light');
+          } else {
+            root.removeAttribute('data-theme');
+          }
+          updateThemeIcon();
+
+          if (animEnabled) {
+            updateVantaTheme(isLight);
+          }
+
+          requestConsent(function(granted) {
+            if (granted) {
+              try {
+                localStorage.setItem('theme', newTheme);
+              } catch(e) {}
+            }
+          });
+        };
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme') || !consentGiven) {
+          var isLight = !e.matches;
+          if (isLight) {
+            root.setAttribute('data-theme', 'light');
+          } else {
+            root.removeAttribute('data-theme');
+          }
+          updateThemeIcon();
+          if (animEnabled) {
+            updateVantaTheme(isLight);
+          }
+        }
+      });
+
+      var COPY_ICON = createIcon('https://api.iconify.design/line-md:clipboard.svg', 'Copy', '14px', '14px');
+      var CHECK_ICON = createIcon('https://api.iconify.design/line-md:clipboard-check.svg', 'Copied', '14px', '14px');
+
+      var COPY_HTML = '<div style="width:14px;height:14px;"></div>';
+      var CHECK_HTML = '<div style="width:14px;height:14px;"></div>';
+
+      var tempCopyContainer = document.createElement('div');
+      tempCopyContainer.appendChild(COPY_ICON.cloneNode(true));
+      var COPY = tempCopyContainer.innerHTML;
+
+      var tempCheckContainer = document.createElement('div');
+      tempCheckContainer.appendChild(CHECK_ICON.cloneNode(true));
+      var CHECK = tempCheckContainer.innerHTML;
+
+      document.querySelectorAll('pre code').forEach(function(c){
+        var p = c.parentElement;
+        if(p.parentElement.classList.contains('code-block-wrapper')) return;
+        var w = document.createElement('div');
+        w.className = 'code-block-wrapper';
+        p.parentNode.insertBefore(w, p);
+        w.appendChild(p);
+        var b = document.createElement('button');
+        b.className = 'copy-btn';
+        b.innerHTML = COPY;
+        b.setAttribute('aria-label', 'Copy code');
+        b.onclick = function(){
+          navigator.clipboard.writeText(c.textContent).then(function(){
+            b.innerHTML = CHECK;
+            b.classList.add('copied');
+            setTimeout(function(){ b.innerHTML = COPY; b.classList.remove('copied'); }, 2000);
+          });
+        };
+        w.appendChild(b);
+      });
+
+      (function initNavEffects() {
+        var navLinks = document.querySelectorAll('.header-nav a');
+        var dimOverlay = document.getElementById('nav-dim-overlay');
+
+        var iconMap = {
+          'home': "{{ '/icons/home.svg' | relative_url }}",
+          'download': "{{ '/icons/doc/downloader.svg' | relative_url }}",
+          'wiki': "{{ '/icons/doc/doc.svg' | relative_url }}",
+          'about': "{{ '/icons/webicon.svg' | relative_url }}",
+          'github': 'https://api.iconify.design/logos:github-octocat.svg',
+          'discord': 'https://api.iconify.design/logos:discord-icon.svg'
+        };
+
+        navLinks.forEach(function(link) {
+          var iconType = link.getAttribute('data-icon');
+          var favicon = document.createElement('img');
+          favicon.className = 'nav-favicon';
+          favicon.alt = '';
+          favicon.src = iconMap[iconType] || '';
+
+          var href = link.getAttribute('href');
+          var isExternal = href.startsWith('http') || href.startsWith('https');
+          if (isExternal) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+          }
+
+          link.insertBefore(favicon, link.firstChild);
+
+          link.addEventListener('mouseenter', function() {
+            dimOverlay.classList.add('active');
+            header.style.zIndex = '1001';
+          });
+
+          link.addEventListener('mouseleave', function() {
+            dimOverlay.classList.remove('active');
+            setTimeout(function() {
+              if (!dimOverlay.classList.contains('active')) {
+                header.style.zIndex = '1000';
+              }
+            }, 300);
+          });
         });
-      });
 
-      dimOverlay.addEventListener('click', function() {
-        this.classList.remove('active');
-        header.style.zIndex = '1000';
-      });
+        dimOverlay.addEventListener('click', function() {
+          this.classList.remove('active');
+          header.style.zIndex = '1000';
+        });
+      })();
+
     })();
-
-  })();
   </script>
 </body>
 </html>
