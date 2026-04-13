@@ -1,16 +1,12 @@
 ---
 layout: default
-splash: true
+splash: false
 title: "Home"
 description: "Welcome to the homepage"
 embed-thumbnail: ../icons/thumb.png
-icon: ../icons/home.svg
+icon: webicon.svg
 ---
 
-
----
-layout: default
----
 
 Text can be **bold**, _italic_, ~~strikethrough~~ or `keyword`.
 

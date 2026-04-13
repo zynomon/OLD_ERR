@@ -7,10 +7,12 @@
   <meta name="description" content="{{ page.description }}">
   <meta property="og:title" content="{{ page.title }}">
   <meta property="og:description" content="{{ page.description }}">
-  {% if page.embed-thumbnail %}<meta property="og:image" content="{{ page.embed-thumbnail | relative_url }}">{% endif %}
-  {% if page.icon %}<link rel="icon" type="image/svg+xml" href="{{ page.icon | relative_url }}">{% endif %}
+  <meta property="og:image" content="{{ '/icon/thumb.png' | relative_url }}">
+      {% if page.icon %}
+        <link rel="icon" type="image/svg+xml" href="{{ '/icon/' | append: page.icon | relative_url }}">
+      {% endif %}
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ '/components/style.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/_layouts/components/style.css' | relative_url }}">
   <link href="https://fonts.cdnfonts.com/css/ocr-a-extended" rel="stylesheet">
   <style>
     #vanta-bg {
@@ -39,12 +41,14 @@
   </style>
 </head>
 <body>
+  <div id="nav-dim-overlay"></div>
+
   {% if page.splash %}
   <div id="splash-screen">
     <span class="system-title">{{ page.title }}</span>
   </div>
 
-  <script src="{{ '/components/splash.js' | relative_url }}"></script>
+  <script src="{{ '/_layouts/components/splash.js' | relative_url }}"></script>
   {% endif %}
 
   <div id="vanta-bg"></div>
@@ -79,7 +83,7 @@
     <div class="header-nav">
       <a href="{{ '/' | relative_url }}" {% if page.url == '/' or page.url == '/index.html' %}class="active"{% endif %}>home</a>
       <a href="{{ '/download/' | relative_url }}" {% if page.url contains '/download' %}class="active"{% endif %}>download</a>
-      <a href="{{ '/wiki/' | relative_url }}" {% if page.url contains '/wiki' %}class="active"{% endif %}>wiki</a>
+      <a href="https://zynomon.github.io/error.doc">wiki</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url contains '/about' %}class="active"{% endif %}>about us</a>
     </div>
   </header>
@@ -89,7 +93,7 @@
   </main>
 
   <footer>
-    Built with Jekyll
+      &lt;!&gt; error.os , Apache 2.0 ©️ since 2025
   </footer>
 
   <script>
@@ -499,6 +503,60 @@
       };
       w.appendChild(b);
     });
+
+    (function initNavEffects() {
+      var navLinks = document.querySelectorAll('.header-nav a');
+      var dimOverlay = document.getElementById('nav-dim-overlay');
+      var siteFavicon = document.querySelector('link[rel="icon"]')?.href || "{{ '/icon/thumb.png' | relative_url }}";
+
+      navLinks.forEach(function(link) {
+        var favicon = document.createElement('img');
+        favicon.className = 'nav-favicon';
+        favicon.alt = '';
+
+        var href = link.getAttribute('href');
+        var isExternal = href.startsWith('http') || href.startsWith('https');
+
+        if (isExternal) {
+          try {
+            var url = new URL(href);
+            favicon.src = url.origin + '/favicon.ico';
+            favicon.onerror = function() {
+              this.src = url.origin + '/favicon.png';
+              this.onerror = function() {
+                this.style.display = 'none';
+              };
+            };
+          } catch(e) {
+            favicon.src = siteFavicon;
+          }
+        } else {
+          favicon.src = siteFavicon;
+        }
+
+        link.insertBefore(favicon, link.firstChild);
+
+        link.addEventListener('mouseenter', function() {
+          dimOverlay.classList.add('active');
+          header.style.zIndex = '1001';
+        });
+
+        link.addEventListener('mouseleave', function() {
+          dimOverlay.classList.remove('active');
+          setTimeout(function() {
+            if (!dimOverlay.classList.contains('active')) {
+              header.style.zIndex = '1000';
+            }
+          }, 300);
+        });
+      });
+
+      dimOverlay.addEventListener('click', function() {
+        this.classList.remove('active');
+        header.style.zIndex = '1000';
+      });
+    })();
+
   })();
   </script>
 </body>

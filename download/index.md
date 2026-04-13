@@ -1,12 +1,7 @@
 ---
 layout: default
 splash: false
-title: "Home2"
-description: "Welcome to the download"
-embed-thumbnail: ../icons/thumb.png
-icon: ../icons/home.svg
+title: "Download error.os"
+description: "This page rediscovers topics about downloading error.os"
+icon: doc/downloader.svg
 ---
-
-<details><summary>e</summary>
-1234 testuing etshmjn
-<details>

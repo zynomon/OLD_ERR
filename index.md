@@ -1,10 +1,9 @@
 ---
 layout: default
-splash: false
+splash: true
 title: "Home"
 description: "Welcome to the homepage"
-embed-thumbnail: /icons/thumb.png
-icon: /icons/home.svg
+icon: home.svg
 ---
 
 # Welcome
