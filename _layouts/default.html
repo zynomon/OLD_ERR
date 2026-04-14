@@ -26,7 +26,6 @@
   {% endif %}
 
   <div id="vanta-bg"></div>
-  <div id="os-toast" aria-live="polite"></div>
 
   <header id="site-header">
     <div class="header-bg"></div>
@@ -63,7 +62,6 @@
     var toggleBtn   = document.getElementById('header-toggle');
     var animToggle  = document.getElementById('anim-toggle');
     var themeToggle = document.getElementById('theme-toggle');
-    var toastEl     = document.getElementById('os-toast');
     var vantaBg     = document.getElementById('vanta-bg');
 
     var consentGiven = false;
@@ -104,37 +102,6 @@
       else if (window.matchMedia('(prefers-color-scheme: light)').matches)
         root.setAttribute('data-theme', 'light');
     })();
-
-    var toastTimer = null;
-
-    function showToast(msg, actions, duration) {
-      duration = duration === undefined ? 4000 : duration;
-      toastEl.innerHTML = '';
-      var span = document.createElement('span');
-      span.textContent = msg;
-      toastEl.appendChild(span);
-      if (actions && actions.length) {
-        var wrap = document.createElement('div');
-        wrap.className = 'toast-actions';
-        actions.forEach(function (a) {
-          var btn = document.createElement('button');
-          btn.textContent = a.label;
-          btn.addEventListener('click', function () { dismissToast(); a.fn(); });
-          wrap.appendChild(btn);
-        });
-        toastEl.appendChild(wrap);
-      }
-      toastEl.classList.remove('toast-hide');
-      toastEl.classList.add('toast-show');
-      clearTimeout(toastTimer);
-      if (duration !== Infinity) toastTimer = setTimeout(dismissToast, duration);
-    }
-
-    function dismissToast() {
-      clearTimeout(toastTimer);
-      toastEl.classList.remove('toast-show');
-      toastEl.classList.add('toast-hide');
-    }
 
     function loadScript(src) {
       return new Promise(function (resolve, reject) {
@@ -258,9 +225,12 @@
       if (scrollTick) return;
       scrollTick = true;
       requestAnimationFrame(function () {
-        var s  = window.scrollY;
-        var op = s > 80 ? Math.max(0.72, 1 - (s - 80) / 320) : 1;
-        header.style.opacity = op.toFixed(3);
+        var scrolled = window.scrollY;
+        if (scrolled > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
         scrollTick = false;
       });
     }, { passive: true });
@@ -282,11 +252,9 @@
     animToggle.addEventListener('click', function () {
       if (!animEnabled) {
         if (isLowEnd) {
-          showToast(
-            'this device may struggle with animations.',
-            [{ label: 'enable anyway', fn: doEnableAnim }, { label: 'cancel', fn: function () {} }],
-            Infinity
-          );
+          if (confirm('this device may struggle with animations. enable anyway?')) {
+            doEnableAnim();
+          }
         } else {
           doEnableAnim();
         }
