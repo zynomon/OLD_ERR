@@ -26,6 +26,7 @@
   {% endif %}
 
   <div id="vanta-bg"></div>
+  <div id="os-toast" aria-live="polite"></div>
 
   <header id="site-header">
     <div class="header-bg"></div>
@@ -37,14 +38,14 @@
         <button class="header-dot" id="header-toggle" aria-label="Toggle navigation"></button>
       </div>
     </div>
-    <div class="header-nav">
+    <nav class="header-nav" aria-label="Site navigation">
       <a href="{{ '/' | relative_url }}" {% if page.url == '/' or page.url == '/index.html' %}class="active"{% endif %} data-icon="home">Start</a>
       <a href="{{ '/download/' | relative_url }}" {% if page.url contains '/download' %}class="active"{% endif %} data-icon="download">Download</a>
       <a href="{{ '/faq/' | relative_url }}" {% if page.url contains '/faq' %}class="active"{% endif %} data-icon="about">FAQ</a>
       <a href="https://zynomon.github.io/error.doc" data-icon="wiki">Wiki</a>
       <a href="https://github.com/zynomon/error" data-icon="github">Github</a>
       <a href="https://discord.gg/Jn7FBwu99F" data-icon="discord">Discord</a>
-    </div>
+    </nav>
   </header>
 
   <main>
@@ -55,347 +56,360 @@
     &lt;!&gt; error.os , Apache 2.0 ⓒ since 2025
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js"></script>
-
   <script>
-    (function(){
-      var header = document.getElementById('site-header');
-      var toggleBtn = document.getElementById('header-toggle');
-      var timeout;
-      var forced = false;
-      var consentGiven = false;
-      try {
-        consentGiven = localStorage.getItem('consentGiven') === 'true';
-      } catch(e) {}
+  (function () {
+    var root        = document.documentElement;
+    var header      = document.getElementById('site-header');
+    var toggleBtn   = document.getElementById('header-toggle');
+    var animToggle  = document.getElementById('anim-toggle');
+    var themeToggle = document.getElementById('theme-toggle');
+    var toastEl     = document.getElementById('os-toast');
+    var vantaBg     = document.getElementById('vanta-bg');
 
-      var vantaEffect = null;
-      var cores = navigator.hardwareConcurrency || 1;
-      var ram = navigator.deviceMemory || 1;
-      var isLowEndDevice = (cores <= 2 || ram <= 2);
+    var consentGiven = false;
+    try { consentGiven = localStorage.getItem('consentGiven') === 'true'; } catch (e) {}
 
-      var animEnabled = true;
-      try {
-        if (consentGiven) {
-          animEnabled = localStorage.getItem('animEnabled') !== 'false';
-        } else {
-          animEnabled = !isLowEndDevice;
-        }
-      } catch(e) {
-        animEnabled = !isLowEndDevice;
-      }
+    function store(k, v)   { try { localStorage.setItem(k, v); } catch (e) {} }
+    function retrieve(k)   { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
-      var root = document.documentElement;
-      var animToggle = document.getElementById('anim-toggle');
-      var themeToggle = document.getElementById('theme-toggle');
-
-      function expand() { if (!forced) header.classList.add('expanded'); }
-      function collapse() { if (!forced) header.classList.remove('expanded'); }
-
-      function setBodyTransparent(transparent) {
-        if (transparent) {
-          document.body.style.setProperty('background', 'transparent', 'important');
-        } else {
-          document.body.style.setProperty('background', '', '');
-        }
-      }
-
-      function requestConsent(callback) {
-        if (consentGiven) {
-          callback(true);
-          return;
-        }
-        var userChoice = confirm('This will save your preferences using cookies. OK to continue, Cancel to skip.');
-        if (userChoice) {
-          consentGiven = true;
-          try {
-            localStorage.setItem('consentGiven', 'true');
-          } catch(e) {}
-          callback(true);
-        } else {
-          callback(false);
-        }
-      }
-
-      function getAdaptivePoints() {
-        if (isLowEndDevice) return 8;
-        var width = window.innerWidth;
-        if (width < 768) return 12;
-        if (width < 1200) return 18;
-        return 25;
-      }
-
-      function getAdaptiveSpacing() {
-        if (isLowEndDevice) return 30;
-        var width = window.innerWidth;
-        if (width < 768) return 28;
-        if (width < 1200) return 24;
-        return 20;
-      }
-
-      function initVanta() {
-        if (!animEnabled || vantaEffect) return;
-
-        var el = document.getElementById('vanta-bg');
-        if (!el) return;
-
-        var isLight = root.getAttribute('data-theme') === 'light';
-        setBodyTransparent(true);
-
-        if (isLight) {
-          vantaEffect = VANTA.FOG({
-            el: el,
-            mouseControls: !isLowEndDevice,
-            touchControls: !isLowEndDevice,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            highlightColor: 0x7f7f7f,
-            midtoneColor: 0xffffff,
-            lowlightColor: 0x0,
-            baseColor: 0xffffff,
-            blurFactor: 0.56,
-            speed: 5.00,
-            zoom: 1.80
-          });
-        } else {
-          vantaEffect = VANTA.TOPOLOGY({
-            el: el,
-            mouseControls: !isLowEndDevice,
-            touchControls: !isLowEndDevice,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 0.5,
-            scaleMobile: 0.5,
-            color: 0xffffff,
-            backgroundColor: 0x0D0F12,
-            points: getAdaptivePoints(),
-            maxDistance: isLowEndDevice ? 12.00 : 15.00,
-            spacing: getAdaptiveSpacing()
-          });
-        }
-      }
-
-      function destroyVanta() {
-        if (vantaEffect) {
-          try {
-            vantaEffect.destroy();
-          } catch(e) {}
-          vantaEffect = null;
-        }
-        var el = document.getElementById('vanta-bg');
-        if (el) {
-          el.style.background = '';
-          while (el.firstChild) {
-            el.removeChild(el.firstChild);
-          }
-        }
-        setBodyTransparent(false);
-      }
-
-      function updateVantaTheme() {
-        if (!vantaEffect || !animEnabled) return;
-        var isLight = root.getAttribute('data-theme') === 'light';
-        destroyVanta();
-        initVanta();
-      }
-
-      function updateAnimButton() {
-        if (!animToggle) return;
-        if (animEnabled) {
-          animToggle.classList.remove('off');
-          animToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="animOnMask"><g stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-dasharray="8" stroke-dashoffset="8" stroke-width="2"><path d="M11 6h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" to="0"/></path><path d="M11 10h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" to="0"/></path><path d="M11 14h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" to="0"/></path><path d="M11 18h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" to="0"/></path></g><path stroke="currentColor" stroke-width="4" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"/></g></mask></defs><path fill="currentColor" d="M0 0h24v24H0z" mask="url(#animOnMask)"/><path fill="none" stroke="currentColor" stroke-dasharray="40" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="40;0"/></path></svg>';
-        } else {
-          animToggle.classList.add('off');
-          animToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="animOffMask"><g stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-dasharray="8" stroke-dashoffset="8" stroke-width="2"><path d="M11 6h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" to="0"/></path><path d="M11 10h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" to="0"/></path><path d="M11 14h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" to="0"/></path><path d="M11 18h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" to="0"/></path></g><path stroke="currentColor" stroke-width="4" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"/><g stroke-width="2"><path fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-dasharray="40" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="40;0"/><animate fill="freeze" attributeName="fill-opacity" begin="1.8s" dur="0.4s" to="1"/></path><path fill="none" stroke="currentColor" stroke-dasharray="28" stroke-dashoffset="28" d="M0 11h26" transform="rotate(45 12 12)"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.4s" dur="0.4s" to="0"/></path></g></g></mask></defs><path fill="currentColor" d="M0 0h24v24H0z" mask="url(#animOffMask)"/><path fill="none" stroke="currentColor" stroke-dasharray="28" stroke-dashoffset="28" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M0 13h26" transform="rotate(45 12 12)"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.4s" dur="0.4s" to="0"/></path></svg>';
-        }
-      }
-
-      function updateThemeIcon() {
-        if (!themeToggle) return;
-        themeToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="themeMask1"><circle cx="7.5" cy="7.5" r="5.5" fill="#fff"/><circle cx="11" cy="7.5" r="6.5"><animate fill="freeze" attributeName="cx" dur="0.4s" values="7.5;11"/><animate fill="freeze" attributeName="r" dur="0.4s" values="5.5;6.5"/></circle></mask><mask id="themeMask2"><g fill="#fff"><circle cx="12" cy="9" r="5.5" transform="rotate(-45 12 12)"><animate fill="freeze" attributeName="cy" begin="0.9s" dur="0.5s" to="15"/></circle><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-145 14.12 14.12;-95 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-95 14.12 14.12;-45 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-45 14.12 14.12;5 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="5 14.12 14.12;55 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path></g><path d="M-4.97 12l18.38 -18.38l10.61 10.61l-18.38 18.38Z"/></mask></defs><g fill="currentColor"><path d="M0 0h24v24H0z" mask="url(#themeMask1)"/><path d="M0 0h24v24H0z" mask="url(#themeMask2)"/></g><path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-22" transform="rotate(-45 12 12)"><animate attributeName="d" dur="5s" keyTimes="0;0.5;1" repeatCount="indefinite" values="M22 12h-22;M24 12h-22;M22 12h-22"/><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.3s" to="0"/></path></svg>';
-      }
-
-      initVanta();
-      updateAnimButton();
-      updateThemeIcon();
-
-      document.querySelectorAll('img').forEach(function(img){
-        img.addEventListener('click', function() {
-          window.open(this.src, '_blank');
-        });
-        img.addEventListener('mousemove', function(e) {
-          var rect = this.getBoundingClientRect();
-          var x = e.clientX - rect.left;
-          var y = e.clientY - rect.top;
-          var centerX = (x / rect.width) - 0.5;
-          var centerY = (y / rect.height) - 0.5;
-          this.style.setProperty('--mouse-x', centerX);
-          this.style.setProperty('--mouse-y', centerY);
-        });
-        img.addEventListener('mouseleave', function() {
-          this.style.setProperty('--mouse-x', 0);
-          this.style.setProperty('--mouse-y', 0);
-        });
-      });
-
-      if (header) {
-        header.onmouseenter = function() { clearTimeout(timeout); expand(); };
-        header.onmouseleave = function() { timeout = setTimeout(collapse, 150); };
-      }
-
-      if (toggleBtn) {
-        toggleBtn.onclick = function(e) {
-          e.stopPropagation();
-          forced = !forced;
-          if (forced) header.classList.add('expanded');
-          else header.classList.remove('expanded');
-          requestConsent(function(granted) {
-            if (granted) {
-              try {
-                localStorage.setItem('headerExpanded', forced);
-              } catch(e) {}
-            }
-          });
-        };
-      }
-
-      if (animToggle) {
-        animToggle.onclick = function() {
-          if (isLowEndDevice && !animEnabled) {
-            var turnOn = confirm('You are on a lower-end device. It is better to not turn on animations. Turn on anyway?');
-            if (turnOn) {
-              animEnabled = true;
-              initVanta();
-              updateAnimButton();
-              requestConsent(function(granted) {
-                if (granted) {
-                  try {
-                    localStorage.setItem('animEnabled', animEnabled);
-                  } catch(e) {}
-                }
-              });
-            }
-            return;
-          }
-          animEnabled = !animEnabled;
-          if (animEnabled) initVanta();
-          else destroyVanta();
-          updateAnimButton();
-          requestConsent(function(granted) {
-            if (granted) {
-              try {
-                localStorage.setItem('animEnabled', animEnabled);
-              } catch(e) {}
-            }
-          });
-        };
-      }
-
-      var saved = null;
-      try {
-        saved = consentGiven ? localStorage.getItem('theme') : null;
-      } catch(e) {}
-
-      if (saved) {
-        if (saved === 'light') root.setAttribute('data-theme', 'light');
-        else root.removeAttribute('data-theme');
+    function requestConsent(cb) {
+      if (consentGiven) { cb(true); return; }
+      if (confirm('Save preferences with cookies? OK to allow, Cancel to skip.')) {
+        consentGiven = true;
+        store('consentGiven', 'true');
+        cb(true);
       } else {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-          root.setAttribute('data-theme', 'light');
-        }
+        cb(false);
       }
+    }
 
-      if (themeToggle) {
-        themeToggle.onclick = function() {
-          var newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-          if (newTheme === 'light') root.setAttribute('data-theme', 'light');
-          else root.removeAttribute('data-theme');
-          updateThemeIcon();
-          if (animEnabled) updateVantaTheme();
-          requestConsent(function(granted) {
-            if (granted) {
-              try {
-                localStorage.setItem('theme', newTheme);
-              } catch(e) {}
-            }
-          });
-        };
+    var cores        = navigator.hardwareConcurrency || 1;
+    var ram          = navigator.deviceMemory || 1;
+    var isLowEnd     = cores <= 2 || ram <= 2;
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var animEnabled = (function () {
+      if (reducedMotion) return false;
+      if (consentGiven) {
+        var s = retrieve('animEnabled');
+        if (s !== null) return s !== 'false';
       }
-
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-        if (!localStorage.getItem('theme') || !consentGiven) {
-          if (!e.matches) root.setAttribute('data-theme', 'light');
-          else root.removeAttribute('data-theme');
-          updateThemeIcon();
-          if (animEnabled) updateVantaTheme();
-        }
-      });
-
-      document.querySelectorAll('pre code').forEach(function(c){
-        var p = c.parentElement;
-        if(p.parentElement.classList.contains('code-block-wrapper')) return;
-        var w = document.createElement('div');
-        w.className = 'code-block-wrapper';
-        p.parentNode.insertBefore(w, p);
-        w.appendChild(p);
-        var b = document.createElement('button');
-        b.className = 'copy-btn';
-        b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2" d="M12 3h7v18h-14v-18h7Z"/><path d="M14.5 3.5v3h-5v-3"/><path stroke-dasharray="12" stroke-width="2" d="M9 13l2 2l4 -4"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="0;12"/></path></g></svg>';
-        b.onclick = function(){
-          navigator.clipboard.writeText(c.textContent).then(function(){
-            b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2" d="M12 3h7v18h-14v-18h7Z"/><path d="M14.5 3.5v3h-5v-3"/><path stroke-dasharray="12" stroke-width="2" d="M9 13l2 2l4 -4"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="12;0"/></path></g></svg>';
-            setTimeout(function(){ b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2" d="M12 3h7v18h-14v-18h7Z"/><path d="M14.5 3.5v3h-5v-3"/><path stroke-dasharray="12" stroke-width="2" d="M9 13l2 2l4 -4"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="0;12"/></path></g></svg>'; }, 2000);
-          });
-        };
-        w.appendChild(b);
-      });
-
-      (function initNavEffects() {
-        var navLinks = document.querySelectorAll('.header-nav a');
-        var dimOverlay = document.getElementById('nav-dim-overlay');
-        var iconMap = {
-          'home': "{{ '/icons/home.svg' | relative_url }}",
-          'download': "{{ '/icons/doc/downloader.svg' | relative_url }}",
-          'wiki': "{{ '/icons/doc/doc.svg' | relative_url }}",
-          'about': "{{ '/icons/webicon.svg' | relative_url }}",
-          'github': 'https://api.iconify.design/logos:github-octocat.svg',
-          'discord': 'https://api.iconify.design/logos:discord-icon.svg'
-        };
-        navLinks.forEach(function(link) {
-          var iconType = link.getAttribute('data-icon');
-          var favicon = document.createElement('img');
-          favicon.className = 'nav-favicon';
-          favicon.alt = '';
-          favicon.src = iconMap[iconType] || '';
-          var href = link.getAttribute('href');
-          var isExternal = href.startsWith('http') || href.startsWith('https');
-          if (isExternal) {
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener noreferrer');
-          }
-          link.insertBefore(favicon, link.firstChild);
-          link.addEventListener('mouseenter', function() {
-            dimOverlay.classList.add('active');
-            header.style.zIndex = '1001';
-          });
-          link.addEventListener('mouseleave', function() {
-            dimOverlay.classList.remove('active');
-            setTimeout(function() {
-              if (!dimOverlay.classList.contains('active')) {
-                header.style.zIndex = '1000';
-              }
-            }, 300);
-          });
-        });
-        dimOverlay.addEventListener('click', function() {
-          this.classList.remove('active');
-          header.style.zIndex = '1000';
-        });
-      })();
+      return !isLowEnd;
     })();
+
+    (function applyTheme() {
+      var saved = consentGiven ? retrieve('theme') : null;
+      if (saved === 'light')     root.setAttribute('data-theme', 'light');
+      else if (saved === 'dark') root.removeAttribute('data-theme');
+      else if (window.matchMedia('(prefers-color-scheme: light)').matches)
+        root.setAttribute('data-theme', 'light');
+    })();
+
+    var toastTimer = null;
+
+    function showToast(msg, actions, duration) {
+      duration = duration === undefined ? 4000 : duration;
+      toastEl.innerHTML = '';
+      var span = document.createElement('span');
+      span.textContent = msg;
+      toastEl.appendChild(span);
+      if (actions && actions.length) {
+        var wrap = document.createElement('div');
+        wrap.className = 'toast-actions';
+        actions.forEach(function (a) {
+          var btn = document.createElement('button');
+          btn.textContent = a.label;
+          btn.addEventListener('click', function () { dismissToast(); a.fn(); });
+          wrap.appendChild(btn);
+        });
+        toastEl.appendChild(wrap);
+      }
+      toastEl.classList.remove('toast-hide');
+      toastEl.classList.add('toast-show');
+      clearTimeout(toastTimer);
+      if (duration !== Infinity) toastTimer = setTimeout(dismissToast, duration);
+    }
+
+    function dismissToast() {
+      clearTimeout(toastTimer);
+      toastEl.classList.remove('toast-show');
+      toastEl.classList.add('toast-hide');
+    }
+
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = function () { reject(new Error('load failed: ' + src)); };
+        document.head.appendChild(s);
+      });
+    }
+
+    var vantaReady = loadScript(
+      'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+    ).then(function () {
+      return Promise.all([
+        loadScript('https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.topology.min.js'),
+        loadScript('https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js')
+      ]);
+    });
+
+    var vantaEffect  = null;
+    var fadeTimer    = null;
+
+    function getPoints() {
+      if (isLowEnd) return 8;
+      var w = window.innerWidth;
+      return w < 768 ? 12 : w < 1200 ? 18 : 25;
+    }
+
+    function getSpacing() {
+      if (isLowEnd) return 32;
+      var w = window.innerWidth;
+      return w < 768 ? 28 : w < 1200 ? 24 : 20;
+    }
+
+    function setBodyTransparent(on) {
+      if (on) document.body.style.setProperty('background', 'transparent', 'important');
+      else    document.body.style.removeProperty('background');
+    }
+
+    function _hardDestroy() {
+      if (vantaEffect) {
+        try { vantaEffect.destroy(); } catch (e) {}
+        vantaEffect = null;
+      }
+      if (vantaBg) {
+        while (vantaBg.firstChild) vantaBg.removeChild(vantaBg.firstChild);
+        vantaBg.style.transition = '';
+        vantaBg.style.opacity    = '1';
+      }
+      setBodyTransparent(false);
+    }
+
+    function destroyVanta(onDone) {
+      clearTimeout(fadeTimer);
+      if (!vantaEffect) { setBodyTransparent(false); if (onDone) onDone(); return; }
+      if (vantaBg) {
+        vantaBg.style.transition = 'opacity 0.32s ease';
+        vantaBg.style.opacity    = '0';
+      }
+      fadeTimer = setTimeout(function () { _hardDestroy(); if (onDone) onDone(); }, 350);
+    }
+
+    function initVanta() {
+      if (!animEnabled || vantaEffect || reducedMotion || !vantaBg) return;
+      if (typeof VANTA === 'undefined') return;
+      var isLight = root.getAttribute('data-theme') === 'light';
+      setBodyTransparent(true);
+      vantaBg.style.opacity    = '0';
+      vantaBg.style.transition = 'opacity 0.4s ease';
+      if (isLight) {
+        vantaEffect = VANTA.FOG({
+          el: vantaBg, mouseControls: !isLowEnd, touchControls: !isLowEnd,
+          gyroControls: false, minHeight: 200, minWidth: 200,
+          highlightColor: 0xc8c8c8, midtoneColor: 0xf0f0f0,
+          lowlightColor: 0xe0e8f0, baseColor: 0xfafafa,
+          blurFactor: 0.60, speed: 3.5, zoom: 1.6
+        });
+      } else {
+        vantaEffect = VANTA.TOPOLOGY({
+          el: vantaBg, mouseControls: !isLowEnd, touchControls: !isLowEnd,
+          gyroControls: false, minHeight: 200, minWidth: 200,
+          scale: 1.0, scaleMobile: 0.6,
+          color: 0xd8e4ff, backgroundColor: 0x0a0c10,
+          points: getPoints(), maxDistance: isLowEnd ? 14 : 18, spacing: getSpacing()
+        });
+      }
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (vantaBg) {
+            vantaBg.style.opacity = '1';
+            setTimeout(function () { if (vantaBg) vantaBg.style.transition = ''; }, 440);
+          }
+        });
+      });
+    }
+
+    function updateVantaTheme() {
+      if (!animEnabled) return;
+      destroyVanta(function () { initVanta(); });
+    }
+
+    var hoverTimeout = null;
+    var forced       = false;
+
+    function expandHeader()  { if (!forced) header.classList.add('expanded'); }
+    function collapseHeader() { if (!forced) header.classList.remove('expanded'); }
+
+    header.addEventListener('mouseenter', function () { clearTimeout(hoverTimeout); expandHeader(); });
+    header.addEventListener('mouseleave', function () { hoverTimeout = setTimeout(collapseHeader, 150); });
+
+    toggleBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      forced = !forced;
+      header.classList.toggle('expanded', forced);
+      requestConsent(function (ok) { if (ok) store('headerExpanded', forced); });
+    });
+
+    var scrollTick = false;
+    window.addEventListener('scroll', function () {
+      if (scrollTick) return;
+      scrollTick = true;
+      requestAnimationFrame(function () {
+        var s  = window.scrollY;
+        var op = s > 80 ? Math.max(0.72, 1 - (s - 80) / 320) : 1;
+        header.style.opacity = op.toFixed(3);
+        scrollTick = false;
+      });
+    }, { passive: true });
+
+    function doEnableAnim() {
+      animEnabled = true;
+      vantaReady.then(initVanta);
+      updateAnimButton();
+      requestConsent(function (ok) { if (ok) store('animEnabled', 'true'); });
+    }
+
+    function doDisableAnim() {
+      animEnabled = false;
+      destroyVanta();
+      updateAnimButton();
+      requestConsent(function (ok) { if (ok) store('animEnabled', 'false'); });
+    }
+
+    animToggle.addEventListener('click', function () {
+      if (!animEnabled) {
+        if (isLowEnd) {
+          showToast(
+            'this device may struggle with animations.',
+            [{ label: 'enable anyway', fn: doEnableAnim }, { label: 'cancel', fn: function () {} }],
+            Infinity
+          );
+        } else {
+          doEnableAnim();
+        }
+      } else {
+        doDisableAnim();
+      }
+    });
+
+    themeToggle.addEventListener('click', function () {
+      var t = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      if (t === 'light') root.setAttribute('data-theme', 'light');
+      else               root.removeAttribute('data-theme');
+      updateThemeIcon();
+      if (animEnabled) updateVantaTheme();
+      requestConsent(function (ok) { if (ok) store('theme', t); });
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (retrieve('theme') && consentGiven) return;
+      if (!e.matches) root.setAttribute('data-theme', 'light');
+      else            root.removeAttribute('data-theme');
+      updateThemeIcon();
+      if (animEnabled) updateVantaTheme();
+    });
+
+    var ICON_ANIM_ON = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="animOnMask"><g stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-dasharray="8" stroke-dashoffset="8" stroke-width="2"><path d="M11 6h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" to="0"/></path><path d="M11 10h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" to="0"/></path><path d="M11 14h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" to="0"/></path><path d="M11 18h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" to="0"/></path></g><path stroke="currentColor" stroke-width="4" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"/></g></mask></defs><path fill="currentColor" d="M0 0h24v24H0z" mask="url(#animOnMask)"/><path fill="none" stroke="currentColor" stroke-dasharray="40" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="40;0"/></path></svg>';
+
+    var ICON_ANIM_OFF = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="animOffMask"><g stroke-linecap="round" stroke-linejoin="round"><g fill="none" stroke="currentColor" stroke-dasharray="8" stroke-dashoffset="8" stroke-width="2"><path d="M11 6h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" to="0"/></path><path d="M11 10h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" to="0"/></path><path d="M11 14h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" to="0"/></path><path d="M11 18h-6"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" to="0"/></path></g><path stroke="currentColor" stroke-width="4" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"/><g stroke-width="2"><path fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-dasharray="40" d="M21 12c0 -3.31 -3.5 -6.25 -8.25 -6.25c-0.5 0 -1.75 2.75 -1.75 6.25c0 3.5 1.25 6.25 1.75 6.25c4.75 0 8.25 -2.94 8.25 -6.25Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="40;0"/><animate fill="freeze" attributeName="fill-opacity" begin="1.8s" dur="0.4s" to="1"/></path><path fill="none" stroke="currentColor" stroke-dasharray="28" stroke-dashoffset="28" d="M0 11h26" transform="rotate(45 12 12)"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.4s" dur="0.4s" to="0"/></path></g></g></mask></defs><path fill="currentColor" d="M0 0h24v24H0z" mask="url(#animOffMask)"/><path fill="none" stroke="currentColor" stroke-dasharray="28" stroke-dashoffset="28" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M0 13h26" transform="rotate(45 12 12)"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.4s" dur="0.4s" to="0"/></path></svg>';
+
+    var ICON_THEME = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><defs><mask id="themeMask1"><circle cx="7.5" cy="7.5" r="5.5" fill="#fff"/><circle cx="11" cy="7.5" r="6.5"><animate fill="freeze" attributeName="cx" dur="0.4s" values="7.5;11"/><animate fill="freeze" attributeName="r" dur="0.4s" values="5.5;6.5"/></circle></mask><mask id="themeMask2"><g fill="#fff"><circle cx="12" cy="9" r="5.5" transform="rotate(-45 12 12)"><animate fill="freeze" attributeName="cy" begin="0.9s" dur="0.5s" to="15"/></circle><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-145 14.12 14.12;-95 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-95 14.12 14.12;-45 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="-45 14.12 14.12;5 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path><path d="M12.62 20.62h3l-1.5 2.5Z" opacity="0"><animateTransform attributeName="transform" dur="5s" repeatCount="indefinite" type="rotate" values="5 14.12 14.12;55 14.12 14.12"/><set fill="freeze" attributeName="opacity" begin="1.4s" to="1"/><animate fill="freeze" attributeName="d" begin="1.4s" dur="0.4s" values="M13.12 17.12h2l-1 2Z;M12.62 20.62h3l-1.5 2.5Z"/></path></g><path d="M-4.97 12l18.38 -18.38l10.61 10.61l-18.38 18.38Z"/></mask></defs><g fill="currentColor"><path d="M0 0h24v24H0z" mask="url(#themeMask1)"/><path d="M0 0h24v24H0z" mask="url(#themeMask2)"/></g><path fill="none" stroke="currentColor" stroke-dasharray="24" stroke-dashoffset="24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-22" transform="rotate(-45 12 12)"><animate attributeName="d" dur="5s" keyTimes="0;0.5;1" repeatCount="indefinite" values="M22 12h-22;M24 12h-22;M22 12h-22"/><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.3s" to="0"/></path></svg>';
+
+    var ICON_COPY  = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2" d="M12 3h7v18h-14v-18h7Z"/><path d="M14.5 3.5v3h-5v-3"/><path stroke-dasharray="12" stroke-width="2" d="M9 13l2 2l4 -4"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="0;12"/></path></g></svg>';
+    var ICON_CHECK = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2" d="M12 3h7v18h-14v-18h7Z"/><path d="M14.5 3.5v3h-5v-3"/><path stroke-dasharray="12" stroke-width="2" d="M9 13l2 2l4 -4"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="12;0"/></path></g></svg>';
+
+    function updateAnimButton() {
+      if (!animToggle) return;
+      animToggle.classList.toggle('off', !animEnabled);
+      animToggle.innerHTML = animEnabled ? ICON_ANIM_ON : ICON_ANIM_OFF;
+    }
+
+    function updateThemeIcon() {
+      if (!themeToggle) return;
+      themeToggle.innerHTML = ICON_THEME;
+    }
+
+    document.querySelectorAll('img').forEach(function (img) {
+      img.addEventListener('click', function () { window.open(this.src, '_blank'); });
+      img.addEventListener('mousemove', function (e) {
+        var r = this.getBoundingClientRect();
+        this.style.setProperty('--mouse-x', (e.clientX - r.left) / r.width - 0.5);
+        this.style.setProperty('--mouse-y', (e.clientY - r.top)  / r.height - 0.5);
+      });
+      img.addEventListener('mouseleave', function () {
+        this.style.setProperty('--mouse-x', 0);
+        this.style.setProperty('--mouse-y', 0);
+      });
+    });
+
+    document.querySelectorAll('pre code').forEach(function (c) {
+      var pre = c.parentElement;
+      if (pre.parentElement.classList.contains('code-block-wrapper')) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'code-block-wrapper';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerHTML = ICON_COPY;
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(c.textContent).then(function () {
+          btn.innerHTML = ICON_CHECK;
+          setTimeout(function () { btn.innerHTML = ICON_COPY; }, 2000);
+        });
+      });
+      wrap.appendChild(btn);
+    });
+
+    (function initNavEffects() {
+      var navLinks   = document.querySelectorAll('.header-nav a');
+      var dimOverlay = document.getElementById('nav-dim-overlay');
+      var iconMap = {
+        home:     "{{ '/icons/home.svg' | relative_url }}",
+        download: "{{ '/icons/doc/downloader.svg' | relative_url }}",
+        wiki:     "{{ '/icons/doc/doc.svg' | relative_url }}",
+        about:    "{{ '/icons/webicon.svg' | relative_url }}",
+        github:   'https://api.iconify.design/logos:github-octocat.svg',
+        discord:  'https://api.iconify.design/logos:discord-icon.svg'
+      };
+      navLinks.forEach(function (link) {
+        var favicon = document.createElement('img');
+        favicon.className = 'nav-favicon';
+        favicon.alt = '';
+        favicon.src = iconMap[link.getAttribute('data-icon')] || '';
+        var href = link.getAttribute('href') || '';
+        if (href.startsWith('http')) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+        link.insertBefore(favicon, link.firstChild);
+        link.addEventListener('mouseenter', function () {
+          dimOverlay.classList.add('active');
+          header.style.zIndex = '1001';
+        });
+        link.addEventListener('mouseleave', function () {
+          dimOverlay.classList.remove('active');
+          setTimeout(function () {
+            if (!dimOverlay.classList.contains('active')) header.style.zIndex = '1000';
+          }, 300);
+        });
+      });
+      dimOverlay.addEventListener('click', function () {
+        this.classList.remove('active');
+        header.style.zIndex = '1000';
+      });
+    })();
+
+    updateAnimButton();
+    updateThemeIcon();
+
+    if (animEnabled) {
+      vantaReady.then(function () { initVanta(); }).catch(function () {});
+    }
+  })();
   </script>
 </body>
 </html>
