@@ -48,7 +48,6 @@ in simple terms.
 .slider {
   width: 100%;
   overflow: hidden;
-  background: #0a0c12;
   border-radius: 24px;
   padding: 8px 0;
 }
