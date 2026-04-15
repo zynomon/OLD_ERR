@@ -74,14 +74,15 @@ Special? maybe some flashes or glitch. <br
   <summary>
     Can I still run my Steam games or am I saying goodbye to my library?
   </summary>
-  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006>documentation - 006</a>
+  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006>006 - documentation
+  </a>
 </details>
 
 <details>
   <summary>
     Would the terminal keep asking for my password like a suspicious bouncer?
   </summary>
-  If your terminal is asking for password ,its asking to get full access to your computer only input your password when its relevant , like tied to doing something outside of home , like writing or accessing something like <code>/boot</code>  <code>/root</code>
+  If your terminal is asking for password ,its asking to get full access to your computer, so only input your password when its relevant , like tied to doing something outside of home , like writing or accessing something like <code>/boot</code>  <code>/root</code>
 </details>
 
 <details>
