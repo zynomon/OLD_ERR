@@ -1,11 +1,9 @@
 ---
-
 layout: default
 title: "Frequently Asked Questions"
 description: "This page discovers the topics about frequently asked questions and concerns about error.os"
 icon: webicon.svg
 splash: false
-
 ---
 
 
@@ -15,7 +13,7 @@ splash: false
   <summary>
     Is error.os safe to daily drive?
   </summary>
-error.os is as safe as debian GNU/Linux because it uses Debian GNU/linux in it's base
+error.os is as safe as debian GNU/Linux because it uses Debian GNU/linux in it's base.
 </details>
 
 <details>
@@ -25,9 +23,7 @@ error.os is as safe as debian GNU/Linux because it uses Debian GNU/linux in it's
   1.5+ GB ram<br>
   10+ GB storage<br>
   Any core CPU ,<br>
-  GPU support for nvidia would do some issues,but otherwise it's okay.
-<br>
-That requirement is standard but in newer or older versions it could change<br>
+  GPU support for nvidia would do some issues, but otherwise it's okay.<br>
 </details>
 
 
@@ -37,7 +33,7 @@ That requirement is standard but in newer or older versions it could change<br>
   </summary>
 Special? maybe some flashes or glitch. <br
 >
-  ERROR.OS is bundled with KDE's minimal version with advanced theme and stuffs
+  ERROR.OS is bundled with KDE's minimal version with advanced theme and stuffs.
 </details>
 
 <details>
@@ -54,7 +50,7 @@ Special? maybe some flashes or glitch. <br
   <summary>
     Will my grandma be able to use this without calling me?
   </summary>
-  Depends on how cool is your grandma, but yeah the gui can give nausea to new users<br> 🧏‍♂️.
+  Depends on how cool is your grandma, but yeah the gui can give nausea to new users 🧏‍♂️.
 </details>
 
 <details>
@@ -72,13 +68,13 @@ Special? maybe some flashes or glitch. <br
 </details>
 
 
-# Concerns about daily driving.
+# Concerns with daily driving.
 
 <details>
   <summary>
     Can I still run my Steam games or am I saying goodbye to my library?
   </summary>
-  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006 >documentation</a>
+  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006>documentation - 006</a>
 </details>
 
 <details>
@@ -102,3 +98,10 @@ Special? maybe some flashes or glitch. <br
   Nope it wont,specially in well known drivers just dont use obscure hardwares.
 </details>
  
+
+<details>
+  <summary>
+  How easy is to get development environment done?    
+  </summary>
+  <a href=https://zynomon.github.io/error.doc/docs/007>007 - documentation</a> covers this topic,
+</details>
