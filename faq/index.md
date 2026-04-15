@@ -110,5 +110,5 @@ Special? maybe some flashes or glitch. <br
 ### For the rest;
 
 ***
-Tell us your issues and concerns or questions at  [Github](https://github.com/zynomon/error/issues) __OR__ [Discord](https://discord.gg/Jn7FBwu99F)
+***Tell us your issues and concerns or questions at  [Github](https://github.com/zynomon/error/issues) __OR__ [Discord](https://discord.gg/Jn7FBwu99F)***
 ***
