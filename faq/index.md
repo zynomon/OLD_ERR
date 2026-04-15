@@ -1,128 +1,102 @@
 ---
 layout: default
-splash: false
-title: "Home"
-description: "Welcome to the homepage"
+title: "Frequently Asked Questions"
+description: "This page discovers the topics about frequently asked questions and concerns about error.os
 icon: webicon.svg
+splash: false
 ---
 
 
-Text can be **bold**, _italic_, ~~strikethrough~~ or `keyword`.
+# Common concerns about the core identity.
 
-[Link to another page](./another-page.html).
+<details>
+  <summary>
+    Is error.os safe to daily drive?
+  </summary>
+error.os is as safe as debian GNU/Linux because it uses Debian GNU/linux in it's base
+</details>
 
-There should be whitespace between paragraphs.
+<details>
+  <summary>
+    Requirements for error.os?
+  </summary>
+  1.5+ GB ram<br>
+  10+ GB storage<br>
+  Any core CPU ,<br>
+  GPU support for nvidia would do some issues,but otherwise it's okay.
+<br>
+That requirement is standard but in newer or older versions it could change<br>
+</details>
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
 
-# Header 1
-
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
-
-## Header 2
-
-> This is a blockquote following a header.
+<details>
+  <summary>
+    What is special in it?
+  </summary>
+Special? maybe some flashes or glitch. <br
 >
-> When something is important enough, you do it even if the odds are not in your favor.
+  ERROR.OS is bundled with KDE's minimal version with advanced theme and stuffs
+</details>
 
-### Header 3
+<details>
+  <summary>
+    in what scenario it should be used?
+  </summary>
+  It's more about testing for fun, it has potential as a 
+  daily usable distro but at the end its same as a repainted distro? 
+  <br> <b>WRONG.</b> 
+  It's not some pretty repaint of debian linux,it uses lesser sets of application but still provides complete KDE experience with our own sets of application served as the replacement for the KDE versions of them.
+</details>
 
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
+<details>
+  <summary>
+    Will my grandma be able to use this without calling me?
+  </summary>
+  Depends on how cool is your grandma, but yeah the gui can give nausea to new users<br> 🧏‍♂️.
+</details>
 
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
+<details>
+  <summary>
+    I broke my Windows install. Can this resurrect my old laptop?
+  </summary>
+  Yeah absolutely. try it out. but don't get disappointed.
+</details>
 
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
+<details>
+  <summary>
+    Does it spy on me like some other operating systems?
+  </summary>
+  There is no such cloud storage , online services in error.os ,even our web browser <a href=https://zynomon.github.io/onu>ONU</a> uses offline storage encryption saving that runs without requiring saving your credentials regardless of the case.
+</details>
 
 
-### Definition lists can be used with HTML syntax.
+# Concerns about daily driving.
 
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
+<details>
+  <summary>
+    Can I still run my Steam games or am I saying goodbye to my library?
+  </summary>
+  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006 >documentation</a>
+</details>
 
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
+<details>
+  <summary>
+    Would the terminal keep asking for my password like a suspicious bouncer?
+  </summary>
+  If your terminal is asking for password ,its asking to get full access to your computer only input your password when its relevant , like tied to doing something outside of home , like writing or accessing something like <code>/boot</code>  <code>/root</code>
+</details>
 
-```
-The final element.
-```
+<details>
+  <summary>
+    If I accidentally deleted something important. Is there an undo button or do I cry now?
+  </summary>
+  if it's done without <code>sudo</code> more likely they are in <code>~/.local/share/trash</code> you can access it by opening trash from the file manager.
+</details>
+
+<details>
+  <summary>
+    Will a random update destroy my Wi-Fi driver at 2 AM before a deadline?
+  </summary>
+  Nope it wont,specially in well known drivers just dont use obscure hardwares.
+</details>
+ 
