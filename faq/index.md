@@ -106,3 +106,9 @@ Special? maybe some flashes or glitch. <br
   </summary>
   <a href=https://zynomon.github.io/error.doc/docs/007>007 - documentation</a> covers this topic,
 </details>
+
+### For the rest;
+
+***
+Tell us your issues and concerns or questions at  [Github](https://github.com/zynomon/error/issues) __OR__ [Discord](https://discord.gg/Jn7FBwu99F)
+***
