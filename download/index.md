@@ -13,7 +13,7 @@ const ISO_API = {
       <div class="card download-item" data-branch="${iso.branch}" style="cursor: pointer; margin-bottom: 1.5rem;">
         <div style="display: flex; align-items: flex-start; gap: 1rem;">
           <div class="iso-icon" data-branch="${iso.branch}" style="flex-shrink: 0;">
-            <img src="/icons/${iso.branch}.jpg" alt="${iso.title}" class="download-thumbnail">
+            <img src="https://zynomon.github.io/error/icons/${iso.branch}.jpg" alt="${iso.title}" class="download-thumbnail">
           </div>
           <div style="flex: 1;">
             <h3 style="margin: 0 0 0.25rem 0; font-size: 1.25rem;">${iso.title}</h3>
@@ -28,7 +28,7 @@ const ISO_API = {
           </div>
         </div>
         <div class="iso-wget" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--line-dim);">
-          <pre style="margin: 0; padding: 0.5rem; background: var(--bg-0); border: none; overflow-x: auto;"><code style="background: transparent; color: var(--accent-2); font-family: monospace; font-size: 0.85rem;">${iso.wgetCmd}</code></pre>
+          <pre><code>${iso.wgetCmd}</code></pre>
         </div>
       </div>
     `;
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <hr>
 
-<h2>Need help</h2>
+<h2>Need help?</h2>
 
 <p>If you encounter any issues with downloading or verification, you can:</p>
 
