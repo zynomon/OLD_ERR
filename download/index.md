@@ -38,10 +38,10 @@ const ISO_API = {
     return `
       <div class="modal-overlay" id="iso-modal">
         <div class="modal-content">
-          <button class="modal-close">&times;</button>
+          <button class="modal-close" style="user-select: none;">&times;</button>
           <div class="modal-body">
             <div class="modal-header">
-              <img src="/icons/${iso.branch}.jpg" alt="${iso.title}" class="modal-image">
+              <img src="https://zynomon.github.io/error/icons/${iso.branch}.jpg" alt="${iso.title}" class="modal-image">
               <h2>${iso.title}</h2>
             </div>
             <div class="modal-details">
@@ -523,11 +523,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <hr>
 
-<h2>Verifying your download</h2>
+<h2>
+  <img src="https://zynomon.github.io/error/icons/doc/sums.svg" style="float: left;">
+  Verifying your download
+</h2>
 
 <p>Some releases include checksum files that allow you to verify the integrity of your downloaded ISO. This ensures the file was not corrupted during download and is exactly what we published. Releases that do not have checksum files available will be noted as such.</p>
 
-<h3>What are checksums</h3>
+<h3>What are checksums?</h3>
 
 <p>A checksum is a unique string of characters calculated from a file. If the file changes even slightly, the checksum will be completely different. Comparing your downloaded file's checksum with the one we published confirms your download is authentic and intact.</p>
 
