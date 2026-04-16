@@ -497,8 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <p>error.os has been out there since 2025. While the main goal is to reach a cool desktop environment with better usability, it is partially implemented.</p>
 
-<p>The name Neospace could mean New Space or New Area or Dimension, though the naming of this branch was not that deep. If we abbreviate <b>Neo</b>space <b>2</b>02<b>5</b>, Neo becomes <b>N</b>, Space becomes <b>S</b>, and 2025 becomes <b>25</b>. This makes <b>NS25</b>, which is the first release of Neospace. We are currently working on Neospace 2026 which is abbreviated as <b>NS26</b>.</p>
-
 <div id="iso"></div>
 
 <hr>
@@ -516,7 +514,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <div align="right">
   <img src="https://github.com/zynomon/error/raw/web-side/icons/neospace.jpg" width="250" height="250" align="right" style="margin-left: 20px; border-radius: 12px;" >
   <h1>Neospace</h1>
-  <p>Neospace is the main branch of error.os for x64-bit standard computers and laptops. These releases are considered stable and are the recommended way to experience error.os.</p>
+  <p>Neospace is the main branch of error.os for x64-bit standard computers and laptops. These releases are considered stable and are the recommended way to experience error.os.</p> 
+  <p>The name Neospace could mean New Space or New Area or Dimension, though the naming of this branch was not that deep. If we abbreviate <b>Neo</b>space <b>2</b>02<b>5</b>, Neo becomes <b>N</b>, Space becomes <b>S</b>, and 2025 becomes <b>25</b>. This makes <b>NS25</b>, which is the first release of Neospace. We are currently working on Neospace 2026 which is abbreviated as <b>NS26</b>.</p>
+
 </div>
 
 <br clear="all">
