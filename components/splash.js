@@ -12,27 +12,25 @@
   };
 
   document.addEventListener("DOMContentLoaded", function () {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.height = "100%";
+    document.documentElement.style.height = "100%";
+
     const splashScreen = document.getElementById("splash-screen");
     if (!splashScreen) return;
 
-    function disableScroll() {
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.height = "100%";
-      document.documentElement.style.height = "100%";
-    }
-
-    function enableScroll() {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-      document.body.style.height = "";
-      document.documentElement.style.height = "";
-    }
-
-    disableScroll();
+    const fontLink = document.createElement("link");
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Nimbus+Mono+PS&display=swap";
+    fontLink.rel = "stylesheet";
+    document.head.appendChild(fontLink);
 
     const style = document.createElement("style");
     style.textContent = `
+      * {
+        font-family: "Nimbus Mono PS", monospace !important;
+      }
       #splash-screen {
         position: fixed;
         top: 0;
@@ -66,7 +64,6 @@
         width: 100%;
         height: 100%;
         background: #000;
-        font-family: "Courier New", monospace;
         font-size: 14px;
         color: #0f0;
         overflow: hidden;
@@ -151,7 +148,6 @@
         font-size: clamp(1.5rem, 6vw, 3rem);
         color: #888;
         margin-top: 2rem;
-        font-family: "Courier New", monospace;
         text-shadow: 0 0 20px #fff, 0 0 40px #fff;
         animation: errorFlicker 0.15s infinite, errorShake 0.5s infinite;
         letter-spacing: 0.3em;
@@ -191,6 +187,39 @@
       @keyframes scanlineGlitch {
         0%, 90%, 100% { opacity: 0.8; }
         95% { opacity: 0.3; }
+      }
+      .terminated-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+      .terminated-overlay::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: grayscale(100%);
+        background: rgba(0, 0, 0, 0.7);
+        mix-blend-mode: multiply;
+      }
+      .terminated-text {
+        position: relative;
+        z-index: 10002;
+        font-size: 28px;
+        color: #00ff00;
+        text-shadow: 0 0 8px #00ff00;
+        font-weight: bold;
+        white-space: pre;
+        background: transparent;
       }
     `;
     document.head.appendChild(style);
@@ -241,7 +270,7 @@
       ctx.fillStyle =
         Math.random() > 0.9 ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.08)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.font = fontSize + "px monospace";
+      ctx.font = fontSize + "px 'Nimbus Mono PS', monospace";
 
       for (let i = 0; i < drops.length; i++) {
         const number = Math.floor(Math.random() * 99999);
@@ -322,21 +351,15 @@
     const flashInterval = setInterval(flashScreen, CONFIG.glitchInterval);
 
     function showTerminatedText() {
+      const overlay = document.createElement("div");
+      overlay.className = "terminated-overlay";
+
       const terminated = document.createElement("div");
+      terminated.className = "terminated-text";
       terminated.textContent = "> terminated_";
-      terminated.style.position = "fixed";
-      terminated.style.left = "50%";
-      terminated.style.top = "50%";
-      terminated.style.transform = "translate(-50%, -50%)";
-      terminated.style.fontFamily = "'Courier New', monospace";
-      terminated.style.fontSize = "28px";
-      terminated.style.color = "#00FF00";
-      terminated.style.textShadow = "0 0 8px #00FF00";
-      terminated.style.zIndex = "10002";
-      terminated.style.pointerEvents = "none";
-      terminated.style.fontWeight = "bold";
-      terminated.style.whiteSpace = "pre";
-      splashScreen.appendChild(terminated);
+
+      overlay.appendChild(terminated);
+      splashScreen.appendChild(overlay);
 
       let visible = true;
       const cursor = setInterval(() => {
@@ -346,7 +369,7 @@
 
       setTimeout(() => {
         clearInterval(cursor);
-        terminated.remove();
+        overlay.remove();
       }, CONFIG.pauseDuration);
     }
 
@@ -363,7 +386,10 @@
           clearInterval(tearInterval);
           clearInterval(flashInterval);
           splashScreen.remove();
-          enableScroll();
+          document.body.style.overflow = "";
+          document.documentElement.style.overflow = "";
+          document.body.style.height = "";
+          document.documentElement.style.height = "";
         }, CONFIG.fadeDuration);
       }, CONFIG.pauseDuration);
     }, CONFIG.duration);
