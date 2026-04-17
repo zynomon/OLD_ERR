@@ -26,21 +26,6 @@
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
 
-    const svgFilter = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg",
-    );
-    svgFilter.setAttribute(
-      "style",
-      "position:fixed; top:0; left:0; width:0; height:0; visibility:hidden;",
-    );
-    svgFilter.innerHTML = `
-      <filter id="grayscaleFilter">
-        <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
-      </filter>
-    `;
-    document.body.appendChild(svgFilter);
-
     const style = document.createElement("style");
     style.textContent = `
       #splash-screen {
@@ -56,8 +41,8 @@
         justify-content: center;
         overflow: hidden;
         opacity: 1;
-        transition: opacity 0.5s ease-out, transform 0.1s ease-out, filter 0.1s ease-out;
-        will-change: transform, opacity, filter;
+        transition: opacity 0.5s ease-out, transform 0.1s ease-out;
+        will-change: transform, opacity;
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -78,7 +63,6 @@
         height: 100%;
         background: #000;
         font-size: 14px;
-        color: #0f0;
         overflow: hidden;
       }
       .panic-text {
@@ -101,7 +85,7 @@
         animation: glitchShake 0.1s infinite, colorPulse 0.3s infinite;
         text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 80px #ff0000, 0 0 120px #ff0000;
         line-height: 1;
-        will-change: transform, filter;
+        will-change: transform;
       }
       .glitch::before, .glitch::after {
         content: attr(data-text);
@@ -159,9 +143,9 @@
       }
       .error-code {
         font-size: clamp(1.5rem, 6vw, 3rem);
-        color: #888;
+        color: #ff4444;
         margin-top: 2rem;
-        text-shadow: 0 0 20px #fff, 0 0 40px #fff;
+        text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
         animation: errorFlicker 0.15s infinite, errorShake 0.5s infinite;
         letter-spacing: 0.3em;
         will-change: opacity, transform;
@@ -186,7 +170,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.15) 0px, rgba(255, 0, 0, 0.15) 2px, transparent 2px, transparent 4px);
+        background: repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.2) 0px, rgba(255, 0, 0, 0.2) 2px, transparent 2px, transparent 4px);
         animation: scanlineMove 0.1s linear infinite, scanlineGlitch 0.5s infinite;
         pointer-events: none;
         opacity: 0.8;
@@ -209,7 +193,7 @@
         <div class="matrix-rain"></div>
         <div class="panic-text">
           <div class="glitch" data-text="SYSTEM ERROR">FATAL ERROR</div>
-          <div class="error-code">SEGMENTATION_FAULT-X00-YOU-CAN'T-FIX-CONTACT-VENDOR</div>
+          <div class="error-code">SEGMENTATION_FAULT-X00-YOU-CANT-FIX-CONTACT-VENDOR</div>
           <div class="glitch-lines"></div>
         </div>
       </div>
@@ -295,7 +279,7 @@
       const r = Math.random() * 255;
       const g = Math.random() * 255;
       const b = Math.random() * 255;
-      tear.style.background = `rgba(${r},${g},${b},0.15)`;
+      tear.style.background = `rgba(${r},${g},${b},0.2)`;
       tear.style.zIndex = "9999";
       tear.style.mixBlendMode = "screen";
       tear.style.pointerEvents = "none";
@@ -320,7 +304,7 @@
       const r = Math.random() * 255;
       const g = Math.random() * 255;
       const b = Math.random() * 255;
-      flash.style.background = `rgba(${r},${g},${b},0.08)`;
+      flash.style.background = `rgba(${r},${g},${b},0.1)`;
       flash.style.zIndex = "9998";
       flash.style.pointerEvents = "none";
       flash.style.mixBlendMode = "screen";
@@ -362,7 +346,7 @@
       terminated.textContent = "> terminated_";
       terminated.style.position = "relative";
       terminated.style.zIndex = "2";
-      terminated.style.fontFamily = "monospace, 'Nimbus Mono PS'";
+      terminated.style.fontFamily = "'Nimbus Mono PS', monospace";
       terminated.style.fontSize = "28px";
       terminated.style.color = "#00ff00";
       terminated.style.textShadow = "0 0 8px #00ff00";
@@ -387,7 +371,7 @@
         const shouldShowUnderscore = Math.floor(elapsed / 500) % 2 === 0;
         terminated.textContent = shouldShowUnderscore
           ? "> terminated_"
-          : "> terminated⠀";
+          : "> terminated";
         requestAnimationFrame(loop);
       }
 
@@ -396,7 +380,6 @@
 
     setTimeout(() => {
       paused = true;
-      splashScreen.style.filter = "grayscale(100%)";
       showTerminatedText();
       setTimeout(() => {
         splashScreen.style.transition = `opacity ${CONFIG.fadeDuration}ms`;
@@ -411,7 +394,6 @@
           document.documentElement.style.overflow = "";
           document.body.style.height = "";
           document.documentElement.style.height = "";
-          svgFilter.remove();
         }, CONFIG.fadeDuration);
       }, CONFIG.pauseDuration);
     }, CONFIG.duration);
