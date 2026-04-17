@@ -391,8 +391,8 @@
         }
         const shouldShowUnderscore = Math.floor(elapsed / 500) % 2 === 0;
         terminated.textContent = shouldShowUnderscore
-          ? "> terminated_"
-          : "> terminated";
+          ? "> terminated"
+          : "> terminated_";
         requestAnimationFrame(loop);
       }
 
