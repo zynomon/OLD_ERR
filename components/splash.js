@@ -26,6 +26,21 @@
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
 
+    const svgFilter = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg",
+    );
+    svgFilter.setAttribute(
+      "style",
+      "position:fixed; top:0; left:0; width:0; height:0; visibility:hidden;",
+    );
+    svgFilter.innerHTML = `
+      <filter id="grayscaleFilter">
+        <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
+      </filter>
+    `;
+    document.body.appendChild(svgFilter);
+
     const style = document.createElement("style");
     style.textContent = `
       * {
@@ -188,7 +203,7 @@
         0%, 90%, 100% { opacity: 0.8; }
         95% { opacity: 0.3; }
       }
-      .terminated-overlay {
+      .terminated-wrapper {
         position: fixed;
         top: 0;
         left: 0;
@@ -200,20 +215,18 @@
         justify-content: center;
         pointer-events: none;
       }
-      .terminated-overlay::before {
-        content: "";
+      .grayscale-layer {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        backdrop-filter: grayscale(100%);
-        background: rgba(0, 0, 0, 0.7);
-        mix-blend-mode: multiply;
+        background: #000;
+        opacity: 0.85;
       }
       .terminated-text {
         position: relative;
-        z-index: 10002;
+        z-index: 10003;
         font-size: 28px;
         color: #00ff00;
         text-shadow: 0 0 8px #00ff00;
@@ -351,28 +364,40 @@
     const flashInterval = setInterval(flashScreen, CONFIG.glitchInterval);
 
     function showTerminatedText() {
-      const overlay = document.createElement("div");
-      overlay.className = "terminated-overlay";
+      const wrapper = document.createElement("div");
+      wrapper.className = "terminated-wrapper";
+
+      const grayscaleDiv = document.createElement("div");
+      grayscaleDiv.className = "grayscale-layer";
+      grayscaleDiv.style.filter = "url(#grayscaleFilter)";
 
       const terminated = document.createElement("div");
       terminated.className = "terminated-text";
       terminated.textContent = "> terminated_";
 
-      overlay.appendChild(terminated);
-      splashScreen.appendChild(overlay);
+      wrapper.appendChild(grayscaleDiv);
+      wrapper.appendChild(terminated);
+      splashScreen.appendChild(wrapper);
 
       let visible = true;
-      const cursor = setInterval(() => {
-        terminated.textContent = visible ? "> terminated_" : "> terminated";
-        visible = !visible;
-      }, 500);
+      const startTime = Date.now();
+      const duration = CONFIG.pauseDuration;
 
-      setTimeout(() => {
-        clearInterval(cursor);
-        overlay.remove();
-      }, CONFIG.pauseDuration);
+      function loop() {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= duration) {
+          wrapper.remove();
+          return;
+        }
+        const shouldShowUnderscore = Math.floor(elapsed / 500) % 2 === 0;
+        terminated.textContent = shouldShowUnderscore
+          ? "> terminated_"
+          : "> terminated";
+        requestAnimationFrame(loop);
+      }
+
+      loop();
     }
-
     setTimeout(() => {
       paused = true;
       splashScreen.style.filter = "grayscale(100%)";
@@ -390,6 +415,7 @@
           document.documentElement.style.overflow = "";
           document.body.style.height = "";
           document.documentElement.style.height = "";
+          svgFilter.remove();
         }, CONFIG.fadeDuration);
       }, CONFIG.pauseDuration);
     }, CONFIG.duration);
