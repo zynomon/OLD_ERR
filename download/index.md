@@ -297,7 +297,7 @@ const ISO_DOWNLOADS = [
     description: "Void release. March 2026. Bootable but has issues.",
     downloadLinks: [
       {
-        url: "https://archive.org/download/error.os-neospace-2026/NS_26%20VOID%20%28%20boots%20but%20has%20issues%20%29/NS26_VOID_3.0.iso",
+        url: "https://archive.org/download/error.os-neospace-2026/NS_26%20VOID%20%28%20boots%20but%20has%20issues%20%29/NS26_VOID_3.0.iso%20",
         shieldImg: "https://img.shields.io/badge/ISO-555555?style=for-the-badge&logo=archive&logoColor=white"
       },
       {
@@ -305,7 +305,7 @@ const ISO_DOWNLOADS = [
         shieldImg: "https://img.shields.io/badge/MD5-555555?style=for-the-badge&logo=archive&logoColor=white"
       }
     ],
-    wgetCmd: `wget "https://archive.org/download/error.os-neospace-2026/NS_26%20VOID%20%28%20boots%20but%20has%20issues%20%29/NS26_VOID_3.0.iso"`,
+    wgetCmd: `wget "https://archive.org/download/error.os-neospace-2026/NS_26%20VOID%20%28%20boots%20but%20has%20issues%20%29/NS26_VOID_3.0.iso%20"`,
     fullDescription: `
       <h1>Void v3</h1>
       <hr>
