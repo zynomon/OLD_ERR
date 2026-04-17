@@ -31,8 +31,7 @@ error.os is as safe as debian GNU/Linux because it uses Debian GNU/linux in it's
   <summary>
     What is special in it?
   </summary>
-Special? maybe some flashes or glitch. <br
->
+Special? maybe some flashes or glitch. <br>
   ERROR.OS is bundled with KDE's minimal version with advanced theme and stuffs.
 </details>
 
@@ -64,7 +63,7 @@ Special? maybe some flashes or glitch. <br
   <summary>
     Does it spy on me like some other operating systems?
   </summary>
-  There is no such cloud storage , online services in error.os ,even our web browser <a href=https://zynomon.github.io/onu>ONU</a> uses offline storage encryption saving that runs without requiring saving your credentials regardless of the case.
+  There is no such cloud storage , online services in error.os ,even our web browser <a href="https://zynomon.github.io/onu">ONU</a> uses offline storage encryption saving that runs without requiring saving your credentials regardless of the case.
 </details>
 
 
@@ -74,8 +73,7 @@ Special? maybe some flashes or glitch. <br
   <summary>
     Can I still run my Steam games or am I saying goodbye to my library?
   </summary>
-  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href=https://zynomon.github.io/error.doc/docs/006>006 - documentation
-  </a>
+  Fear not, steam on linux is better than ever. for more information you can..open error.doc by  typing this in your terminal <code><pre>doc</pre></code> and open the gaming guide , or.. you can visit our online documentation about this matter in <a href="https://zynomon.github.io/error.doc/docs/006">006 - documentation</a>
 </details>
 
 <details>
@@ -104,7 +102,7 @@ Special? maybe some flashes or glitch. <br
   <summary>
   How easy is to get development environment done?    
   </summary>
-  <a href=https://zynomon.github.io/error.doc/docs/007>007 - documentation</a> covers this topic,
+  <a href="https://zynomon.github.io/error.doc/docs/007">007 - documentation</a> covers this topic,
 </details>
 
 ### For the rest;
