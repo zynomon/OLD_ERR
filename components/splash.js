@@ -362,7 +362,7 @@
       terminated.textContent = "> terminated_";
       terminated.style.position = "relative";
       terminated.style.zIndex = "2";
-      terminated.style.fontFamily = "'Nimbus Mono PS', monospace";
+      terminated.style.fontFamily = "monospace, 'Nimbus Mono PS'";
       terminated.style.fontSize = "28px";
       terminated.style.color = "#00ff00";
       terminated.style.textShadow = "0 0 8px #00ff00";
@@ -387,7 +387,7 @@
         const shouldShowUnderscore = Math.floor(elapsed / 500) % 2 === 0;
         terminated.textContent = shouldShowUnderscore
           ? "> terminated_"
-          : "> terminated";
+          : "> terminated⠀";
         requestAnimationFrame(loop);
       }
 
