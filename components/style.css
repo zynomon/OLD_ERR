@@ -796,6 +796,9 @@ footer {
         font-size: 20px;
     }
     .header-nav a {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         font-size: 13px;
     }
     .header-nav {

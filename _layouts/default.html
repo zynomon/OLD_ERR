@@ -116,26 +116,11 @@
     var vantaReady = loadScript(
       'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
     ).then(function () {
-      return Promise.all([
-        loadScript('https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.topology.min.js'),
-        loadScript('https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js')
-      ]);
+      return loadScript('https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js');
     });
 
     var vantaEffect  = null;
     var fadeTimer    = null;
-
-    function getPoints() {
-      if (isLowEnd) return 8;
-      var w = window.innerWidth;
-      return w < 768 ? 12 : w < 1200 ? 18 : 25;
-    }
-
-    function getSpacing() {
-      if (isLowEnd) return 32;
-      var w = window.innerWidth;
-      return w < 768 ? 28 : w < 1200 ? 24 : 20;
-    }
 
     function setBodyTransparent(on) {
       if (on) document.body.style.setProperty('background', 'transparent', 'important');
@@ -176,17 +161,17 @@
         vantaEffect = VANTA.FOG({
           el: vantaBg, mouseControls: !isLowEnd, touchControls: !isLowEnd,
           gyroControls: false, minHeight: 200, minWidth: 200,
-          highlightColor: 0xc8c8c8, midtoneColor: 0xf0f0f0,
-          lowlightColor: 0xe0e8f0, baseColor: 0xfafafa,
+          highlightColor: 0xa0a0a0, midtoneColor: 0x7a7a7a,
+          lowlightColor: 0x393939, baseColor: 0xfcfcfc,
           blurFactor: 0.60, speed: 3.5, zoom: 1.6
         });
       } else {
-        vantaEffect = VANTA.TOPOLOGY({
+        vantaEffect = VANTA.FOG({
           el: vantaBg, mouseControls: !isLowEnd, touchControls: !isLowEnd,
           gyroControls: false, minHeight: 200, minWidth: 200,
-          scale: 1.0, scaleMobile: 0.6,
-          color: 0xd8e4ff, backgroundColor: 0x0a0c10,
-          points: getPoints(), maxDistance: isLowEnd ? 14 : 18, spacing: getSpacing()
+          highlightColor: 0x373737, midtoneColor: 0x1e1e1e,
+          lowlightColor: 0x0d0c39, baseColor: 0x0f0f0f,
+          blurFactor: 0.60, speed: 3.5, zoom: 1.6
         });
       }
       requestAnimationFrame(function () {
