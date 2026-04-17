@@ -5,13 +5,18 @@
     duration: 4000,
     pauseDuration: 1000,
     fadeDuration: 800,
-    matrixFPS: 100,
-    glitchInterval: 120,
+    matrixFPS: 60,
+    glitchInterval: 80,
     shakeIntensity: 20,
     fontSize: 16,
   };
 
   document.addEventListener("DOMContentLoaded", function () {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.height = "100%";
+    document.documentElement.style.height = "100%";
+
     const splashScreen = document.getElementById("splash-screen");
     if (!splashScreen) return;
 
@@ -32,6 +37,10 @@
         opacity: 1;
         transition: opacity 0.5s ease-out, transform 0.1s ease-out, filter 0.1s ease-out;
         will-change: transform, opacity, filter;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
       }
       .glitch-container {
         position: relative;
@@ -46,7 +55,7 @@
         width: 100%;
         height: 100%;
         background: #000;
-        font-family: "Courier New", monospace;
+        font-family: "Nimbus Mono", monospace;
         font-size: 14px;
         color: #0f0;
         overflow: hidden;
@@ -131,7 +140,7 @@
         font-size: clamp(1.5rem, 6vw, 3rem);
         color: #888;
         margin-top: 2rem;
-        font-family: "Courier New", monospace;
+        font-family: "Nimbus Mono", monospace;
         text-shadow: 0 0 20px #fff, 0 0 40px #fff;
         animation: errorFlicker 0.15s infinite, errorShake 0.5s infinite;
         letter-spacing: 0.3em;
@@ -221,7 +230,7 @@
       ctx.fillStyle =
         Math.random() > 0.9 ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.08)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.font = fontSize + "px monospace";
+      ctx.font = fontSize + "px 'Nimbus Mono', monospace";
 
       for (let i = 0; i < drops.length; i++) {
         const number = Math.floor(Math.random() * 99999);
@@ -253,7 +262,7 @@
       setTimeout(() => (splashScreen.style.transform = ""), 50);
     }
 
-    const shakeInterval = setInterval(screenShake, 80);
+    const shakeInterval = setInterval(screenShake, 50);
 
     function createScreenTear() {
       if (paused) return;
@@ -308,7 +317,7 @@
       terminated.style.left = "50%";
       terminated.style.top = "50%";
       terminated.style.transform = "translate(-50%, -50%)";
-      terminated.style.fontFamily = "'Courier New', monospace";
+      terminated.style.fontFamily = "'Nimbus Mono', monospace";
       terminated.style.fontSize = "28px";
       terminated.style.color = "#00FF00";
       terminated.style.textShadow = "0 0 8px #00FF00";

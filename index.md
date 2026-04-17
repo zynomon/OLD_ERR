@@ -101,4 +101,4 @@ in simple terms.
 
 # Origins
 
-error.os is founded in bangladesh we also have goals to integrate bangla language into the system more further. it doesn't matter if we are a team or not , you are always open to bring new ideas into error.os , to do that you can mail `privately` at [zynomon@proton.me](mailto:zynomon@proton.me) or create an issue post here:- [![GitHub/zynomon/error/issues](https://img.shields.io/badge/GitHub/zynomon/error-%23121011.svg?logo=github&logoColor=white)](https://github.com/zynomon/error/issues)
+error.os is founded in bangladesh we also have goals to integrate bangla language into the system more further. it doesn't matter if we are a team or not , you are always open to bring new ideas into error.os , to do that you can mail `privately` at [zynomon@proton.me](mailto:zynomon@proton.me) or create an issue post here:- [![.../error/issues](https://img.shields.io/badge/GitHub/zynomon/error-%23121011.svg?logo=github&logoColor=white)](https://github.com/zynomon/error/issues)
